@@ -21,6 +21,19 @@ resource "google_container_cluster" "primary" {
   network    = var.network_name
   subnetwork = var.subnet_name
 
+  # NEW: Map the secondary IP ranges we created in main.tf
+  ip_allocation_policy {
+    cluster_secondary_range_name  = "gke-pod-range"
+    services_secondary_range_name = "gke-service-range"
+  }
+
+  # NEW: Force the cluster to be private so nodes don't get public IPs
+  private_cluster_config {
+    enable_private_nodes    = true
+    enable_private_endpoint = false
+    master_ipv4_cidr_block  = "172.16.0.0/28" # Dedicated master range
+  }
+
   network_policy {
     enabled = true
     provider = "CALICO"
@@ -37,10 +50,8 @@ resource "google_container_cluster" "primary" {
   }
 
   deletion_protection = false
-
 }
 
-# Create the primary node pool for the GKE cluster
 resource "google_container_node_pool" "primary_nodes" {
   name       = "${google_container_cluster.primary.name}-node-pool"
   location   = var.region
@@ -50,10 +61,12 @@ resource "google_container_node_pool" "primary_nodes" {
   node_config {
     machine_type = var.machine_type
     labels       = merge(local.default_labels, var.labels)
+    
+    # NEW: Add routing tag so traffic hits the VM-Series firewall
+    tags = ["fw-trust"]
 
     service_account = var.service_account_email
 
-    # Standard OAuth scopes for GKE nodes
     oauth_scopes = [
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/devstorage.read_only",

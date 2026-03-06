@@ -17,11 +17,6 @@ locals {
   container_names = toset([for f in local.container_files : dirname(f)])
 }
 
-module "network-hub" {
-  source = "./gcp/network-hub"
-
-}
-
 module "sa-instance" {
   source = "./gcp/service-account"
 
@@ -80,12 +75,37 @@ module "container-repos" {
   }
 }
 
+# -------------------------------------------------------------------------
+# NEW: Create a dedicated GKE Subnet inside the Torque Trust VPC
+# This solves the /28 IP exhaustion issue while keeping traffic routed to the FW
+# -------------------------------------------------------------------------
+resource "google_compute_subnetwork" "gke_subnet" {
+  name                     = "gke-trust-subnet"
+  ip_cidr_range            = "10.10.100.0/24"
+  region                   = var.region
+  network                  = "projects/prod-wdfirpnd3bws/global/networks/jvalley-trust-vpc"
+  private_ip_google_access = true
+
+  # GKE requires secondary IP ranges for Pods and Services
+  secondary_ip_range {
+    range_name    = "gke-pod-range"
+    ip_cidr_range = "10.11.0.0/20"
+  }
+  secondary_ip_range {
+    range_name    = "gke-service-range"
+    ip_cidr_range = "10.12.0.0/20"
+  }
+}
+
+# -------------------------------------------------------------------------
+# UPDATED: GKE Module Call
+# -------------------------------------------------------------------------
 module "gke" {
   source = "./gcp/gke"
 
   cluster_name          = "${var.project_name}-gke-cluster"
-  network_name          = module.network-hub.vpc_network_name
-  subnet_name           = module.network-hub.public_subnet_name
+  network_name          = "projects/prod-wdfirpnd3bws/global/networks/jvalley-trust-vpc"
+  subnet_name           = google_compute_subnetwork.gke_subnet.name
   service_account_email = module.sa-k8s.service_account_email
   machine_type          = "e2-standard-2"
   labels = {
@@ -94,13 +114,14 @@ module "gke" {
   }
 }
 
+# -------------------------------------------------------------------------
+# UPDATED: VM Module Calls (Removed depends_on and updated networks)
+# -------------------------------------------------------------------------
 module "vm01" {
-  source     = "./gcp/compute-instance"
-  depends_on = [module.network-hub]
-
+  source                = "./gcp/compute-instance"
   instance_name         = "${var.project_name}-protected"
-  network_name          = module.network-hub.vpc_network_name
-  subnet_name           = module.network-hub.public_subnet_name
+  network_name          = "projects/prod-wdfirpnd3bws/global/networks/jvalley-trust-vpc"
+  subnet_name           = google_compute_subnetwork.gke_subnet.name
   service_account_email = module.sa-instance.service_account_email
   labels = {
     environment            = "prod"
@@ -110,12 +131,10 @@ module "vm01" {
 }
 
 module "vm02" {
-  source     = "./gcp/compute-instance"
-  depends_on = [module.network-hub]
-
+  source                = "./gcp/compute-instance"
   instance_name         = "${var.project_name}-unprotected"
-  network_name          = module.network-hub.vpc_network_name
-  subnet_name           = module.network-hub.public_subnet_name
+  network_name          = "projects/prod-wdfirpnd3bws/global/networks/jvalley-trust-vpc"
+  subnet_name           = google_compute_subnetwork.gke_subnet.name
   service_account_email = module.sa-instance.service_account_email
   labels = {
     environment            = "prod"

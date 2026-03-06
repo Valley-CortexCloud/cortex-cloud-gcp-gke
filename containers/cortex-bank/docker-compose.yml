@@ -1,0 +1,16 @@
+# GoCortex Broken Bank - Dual-Server Architecture
+# Flask/Gunicorn (port 8888) for SAST testing + Tomcat (port 9999) for exploit endpoints
+services:
+  gocortex-broken-bank:
+    build: .
+    ports:
+      - "8888:8888"   # Flask/Gunicorn - Banking UI and SAST endpoints
+      - "9999:8080"   # Tomcat - Java exploit endpoints and Spring4Shell
+    environment:
+      - SESSION_SECRET=hardcoded-docker-secret-key
+      - DATABASE_URL=sqlite:///app/instance/gocortexbrokenbank.db
+      - FLASK_ENV=production
+    volumes:
+      - ./instance:/app/instance
+    restart: unless-stopped
+    container_name: gocortex-broken-bank

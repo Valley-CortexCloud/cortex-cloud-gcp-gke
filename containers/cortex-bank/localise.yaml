@@ -1,0 +1,498 @@
+# GoCortex Broken Bank Localisation Configuration
+country_code: "AU"
+currency_symbol: "$"
+date_format: "YYYY-MM-DD"
+support_phone: "+61 3 8123 4567"
+legal_disclaimer_text: |
+  WARNING: This application is for educational and CI/CD security testing purposes only.
+  It contains intentionally vulnerable code and should NEVER be deployed in production.
+  Use only in isolated environments for automated security testing pipelines.
+brand_colours:
+  primary: "#00cc66"     # Banking green
+  secondary: "#000000"   # Pure black
+  accent: "#00ff80"      # Bright green accent
+  dark: "#0a0a0a"        # Deep black
+  light: "#1a1a1a"       # Dark grey
+  warning: "#ffcc00"     # Gold warning
+landing_copy:
+  title: "GoCortex Broken Bank"
+  subtitle: "Digital Banking Platform"
+  welcome_message: "Experience next-generation digital banking with GoCortex Broken Bank"
+  description: |
+    Secure, fast, and reliable digital banking services designed for 
+    modern financial needs with cutting-edge technology and comprehensive 
+    account management solutions from GoCortex Broken Bank.
+  features:
+    - "24/7 Online Banking Access"
+    - "Advanced Security Features"
+    - "Mobile Banking Solutions"
+    - "Investment Portfolio Management"
+    - "Real-time Transaction Monitoring"
+banking_services:
+  - name: "Personal Banking"
+    endpoints: ["/search", "/comment", "/ping"]
+    description: "Comprehensive personal banking solutions and account management"
+    severity: "CRITICAL"
+  - name: "Business Banking"
+    endpoints: ["/debug", "/log"]
+    description: "Advanced business banking tools and corporate financial services"
+    severity: "HIGH"
+  - name: "Investment Services"
+    endpoints: ["/debug"]
+    description: "Professional investment advisory and portfolio management solutions"
+    severity: "CRITICAL"
+  - name: "Digital Services"
+    endpoints: ["/search", "/comment"]
+    description: "Mobile banking, online payments, and digital wallet integration"
+    severity: "HIGH"
+# Testing configuration for cybersecurity validation purposes only
+# These are fictitious URLs employed by automated security scanners for threat detection validation
+security_testing:
+  test_endpoints:
+    malware_filter_test: "https://urlfiltering.paloaltonetworks.com/test-malware"  # Official Palo Alto test URL
+    c2_simulation: "c2.sigre.xyz"        # Command and control test domain
+    botnet_simulation: "botnet.sigre.xyz"  # Botnet test domain
+    malware_simulation: "malware.sigre.xyz"  # Malware test domain
+    hacker_simulation: "hacker.sigre.xyz"    # Hacker test domain
+
+# Flask UI Localisation (Used by Jinja2 templates)
+navigation:
+  home: "Home"
+  services: "Services"
+  security: "Security"
+
+dashboard:
+  account_overview: "Account Overview"
+  total_balance: "Total Balance"
+  active_cards: "Active Cards"
+  monthly_growth: "Monthly Growth"
+  member_status: "Member Status"
+
+buttons:
+  explore_services: "Explore Services"
+  security_info: "Security Info"
+  open_account: "Open Account"
+  activate_service: "Activate Service"
+  learn_more: "Learn More"
+  submit: "Submit"
+  reset: "Reset"
+  view_details: "View Details"
+  transfer_now: "Transfer Now"
+  register_company: "Register Company"
+  schedule_consultation: "Schedule Consultation"
+  invest_now: "Invest Now"
+  join_scheme: "Join Scheme"
+  calculate_returns: "Calculate Returns"
+  book_masterclass: "Book Masterclass"
+
+promotional_banner:
+  new_customer_offer: "NEW CUSTOMER OFFER"
+  offer_text: "Open your first GoCortex Broken Bank account today and get $50 bonus with qualifying deposit."
+
+sections:
+  banking_features_title: "Banking Features"
+  banking_features_description: "Comprehensive financial services designed for your success"
+  our_services_title: "Our Services"
+  our_services_description: "Discover comprehensive banking solutions tailored to your financial goals"
+
+exploit_section:
+  title: "Advanced Security Testing - Exploit Endpoints"
+  description: "Java/Tomcat-based remote code execution endpoints for comprehensive penetration testing"
+  warning: "WARNING: These endpoints allow arbitrary code execution. For security testing only."
+  tomcat_server_label: "Tomcat Server:"
+  open_dashboard_button: "Open Exploit Application Dashboard"
+  
+  file_upload:
+    title: "File Upload RCE"
+    description: "Unrestricted file upload allowing JSP webshell deployment"
+    button_text: "Test Upload"
+  
+  command_execution:
+    title: "Command Execution"
+    description: "Runtime.exec() command injection vulnerability"
+    button_text: "Test Execute"
+  
+  network_ping:
+    title: "Network Ping"
+    description: "ProcessBuilder command injection with shell"
+    button_text: "Test Ping"
+  
+  dynamic_class_loading:
+    title: "Dynamic Class Loading"
+    description: "URLClassLoader arbitrary code execution"
+    button_text: "Test Dynamic"
+  
+  code_evaluation:
+    title: "Code Evaluation"
+    description: "ScriptEngine JavaScript/Groovy execution"
+    button_text: "Test Eval"
+  
+  spring4shell:
+    title: "Spring4Shell"
+    description: "CVE-2022-22965 RCE (CVSS 9.8 Critical)"
+    button_text: "Test Spring4Shell"
+
+cta:
+  title: "Ready to Start Banking?"
+  description: "Join millions of customers who trust GoCortex Broken Bank for their financial needs"
+
+footer:
+  banking_services_title: "Banking Services"
+  personal_banking: "Personal Banking"
+  business_accounts: "Business Accounts"
+  investment_services: "Investment Services"
+  digital_banking: "Digital Banking"
+  copyright_prefix: "Created by Simon Sigre, GoCortex."
+
+# Banking Pages Content
+pages:
+  netbank:
+    title: "Personal Netbank"
+    subtitle: "Your Account Dashboard"
+    welcome_message: "Welcome to your personal banking dashboard"
+    balance:
+      current_balance_label: "Current Balance"
+      available_funds_label: "Available Funds"
+      account_number_label: "Account Number"
+      sort_code_label: "Sort Code"
+    transactions:
+      section_title: "Recent Transactions"
+      headers:
+        - "Date"
+        - "Description"
+        - "Amount"
+        - "Balance"
+      tiers:
+        high_balance:
+          - date: "2024-11-13"
+            description: "Crown Casino Melbourne - High Roller Table"
+            amount: "-12500.00"
+            type: "debit"
+          - date: "2024-11-12"
+            description: "Property Settlement - 27 Lansell Rd Toorak"
+            amount: "-2850000.00"
+            type: "debit"
+          - date: "2024-11-11"
+            description: "Brighton Yacht Club - Annual Membership"
+            amount: "-18500.00"
+            type: "debit"
+          - date: "2024-11-10"
+            description: "Hermès Collins St - Shopping"
+            amount: "-8750.00"
+            type: "debit"
+          - date: "2024-11-09"
+            description: "Louis Vuitton Melbourne - Purchase"
+            amount: "-6200.00"
+            type: "debit"
+          - date: "2024-11-08"
+            description: "Southbank Penthouse Rent"
+            amount: "-12000.00"
+            type: "debit"
+          - date: "2024-11-07"
+            description: "Salary Deposit - Executive Compensation"
+            amount: "+125000.00"
+            type: "credit"
+          - date: "2024-11-06"
+            description: "Investment Returns - Portfolio Dividend"
+            amount: "+45000.00"
+            type: "credit"
+        low_balance:
+          - date: "2024-11-13"
+            description: "7-Eleven Melbourne CBD - Coffee & Snacks"
+            amount: "-12.50"
+            type: "debit"
+          - date: "2024-11-12"
+            description: "Maccas Drive-Thru - Dinner"
+            amount: "-18.95"
+            type: "debit"
+          - date: "2024-11-11"
+            description: "Bunnings Warehouse - Hardware"
+            amount: "-67.40"
+            type: "debit"
+          - date: "2024-11-10"
+            description: "Uber Eats - Late Night Order"
+            amount: "-34.80"
+            type: "debit"
+          - date: "2024-11-09"
+            description: "Coles Supermarket - Groceries"
+            amount: "-89.75"
+            type: "debit"
+          - date: "2024-11-08"
+            description: "Woolworths - Weekly Shopping"
+            amount: "-112.30"
+            type: "debit"
+          - date: "2024-11-07"
+            description: "Salary Deposit"
+            amount: "+2450.00"
+            type: "credit"
+          - date: "2024-11-06"
+            description: "PTV Myki Top-Up"
+            amount: "-40.00"
+            type: "debit"
+          - date: "2024-11-05"
+            description: "Netflix Subscription"
+            amount: "-16.99"
+            type: "debit"
+          - date: "2024-11-04"
+            description: "Dan Murphy's - Beverages"
+            amount: "-54.90"
+            type: "debit"
+  
+  business:
+    title: "Business Banking Services"
+    subtitle: "Corporate Financial Solutions"
+    description: "Advanced offshore banking services for sophisticated business operations"
+    cards:
+      - id: "cayman_transfer"
+        title: "Cayman Islands Wire Transfer"
+        description: "Secure international wire transfers to your Cayman Islands corporate accounts with complete discretion and minimal reporting requirements"
+        button_key: "transfer_now"
+      - id: "shell_company"
+        title: "Shell Company Registration"
+        description: "Expedited shell company formation in tax-friendly jurisdictions including British Virgin Islands, Panama, and Delaware with same-day incorporation"
+        button_key: "register_company"
+      - id: "tax_haven"
+        title: "Tax Haven Consultation"
+        description: "Expert advisory services for offshore tax optimisation strategies and international corporate structuring to minimise your global tax obligations"
+        button_key: "schedule_consultation"
+      - id: "crypto_mixer"
+        title: "Corporate Crypto Mixer"
+        description: "Enterprise-grade cryptocurrency tumbling services for enhanced transaction privacy and origin obfuscation across multiple blockchain networks"
+        button_key: "activate_service"
+  
+  investments:
+    title: "Investment Services"
+    subtitle: "Wealth Growth Opportunities"
+    description: "Exclusive investment opportunities with guaranteed exceptional returns"
+    marketing_copy: "Join thousands of satisfied investors who have achieved financial freedom through our proprietary investment strategies"
+    cards:
+      - id: "nigerian_prince"
+        title: "Nigerian Prince Investment Fund"
+        description: "Exclusive opportunity to assist royal family member with asset transfer. Guaranteed 10,000% returns within 30 days. Limited spots available!"
+        guaranteed_return: "10,000% ROI"
+        button_key: "invest_now"
+      - id: "pyramid_builder"
+        title: "Pyramid Scheme Builder Platform"
+        description: "Revolutionary multi-level marketing system. Recruit just 5 friends who recruit 5 friends and earn passive income forever! Be your own boss!"
+        guaranteed_return: "Unlimited earnings potential"
+        button_key: "join_scheme"
+      - id: "ponzi_calculator"
+        title: "Ponzi Returns Calculator"
+        description: "Calculate your guaranteed returns using our proprietary investment algorithm. Early investors receive priority distributions from new member contributions"
+        guaranteed_return: "8% weekly returns"
+        button_key: "calculate_returns"
+      - id: "get_rich_masterclass"
+        title: "Get Rich Quick Masterclass"
+        description: "Learn secret wealth-building strategies that banks don't want you to know! Join our exclusive webinar and start making money from home today!"
+        guaranteed_return: "Financial freedom in 90 days"
+        button_key: "book_masterclass"
+  
+  digital:
+    title: "Digital Banking Services"
+    subtitle: "Anonymous Financial Solutions"
+    description: "Privacy-focused digital banking services for the modern age"
+    cards:
+      - id: "crypto_tumbler"
+        title: "Cryptocurrency Tumbler"
+        description: "Advanced coin mixing service that obscures blockchain transaction trails across Bitcoin, Ethereum, and Monero networks for maximum privacy"
+        button_key: "activate_service"
+      - id: "untraceable_transfers"
+        title: "Untraceable Wire Transfers"
+        description: "International money transfers with complete anonymity. No KYC requirements, no transaction monitoring, no paper trail whatsoever"
+        button_key: "transfer_now"
+      - id: "anonymous_accounts"
+        title: "Anonymous Account Creation"
+        description: "Open fully anonymous bank accounts with no identity verification required. Instant activation with cryptocurrency funding options"
+        button_key: "open_account"
+      - id: "burner_accounts"
+        title: "Burner Account Service"
+        description: "Temporary disposable bank accounts perfect for one-time transactions. Auto-destruct feature erases all records after 30 days"
+        button_key: "activate_service"
+  
+  signup:
+    title: "Open Your Account Today"
+    subtitle: "Join GoCortex Broken Bank"
+    description: "Create your account in seconds with no verification required"
+    form:
+      full_name_label: "Full Name"
+      full_name_placeholder: "Enter your full name"
+      email_label: "Email Address"
+      email_placeholder: "Enter your email"
+      password_label: "Password"
+      password_placeholder: "Choose a password"
+      account_type_label: "Account Type"
+      account_types:
+        - value: "personal"
+          label: "Personal Banking"
+        - value: "business"
+          label: "Business Account"
+        - value: "offshore"
+          label: "Offshore Account"
+        - value: "anonymous"
+          label: "Anonymous Account"
+      submit_button_key: "submit"
+      reset_button_key: "reset"
+    success:
+      title: "Account Created Successfully!"
+      message: "Your account has been created with no verification required"
+      account_number_prefix: "Account Number:"
+      sort_code_prefix: "Sort Code:"
+      next_steps: "You can now access all banking services immediately"
+
+# Tomcat Servlet Localisation (Used by exploit-app Java servlets)
+tomcat_servlets:
+  common:
+    app_name: "GoCortex Broken Bank"
+    version_label: "Version {version}"
+    vulnerability_tag: "Intentionally Vulnerable Application"
+    error_prefix: "[ERROR]"
+    exit_code_label: "Exit code:"
+  
+  upload:
+    page_title: "GoCortex Broken Bank - File Upload"
+    description: "Upload files without restrictions (JSP, WAR, EXE, etc.)"
+    file_input_label: "file"
+    submit_button: "Upload"
+    success_message: "File uploaded successfully:"
+    upload_path_label: "Upload path:"
+    access_link_text: "Access at:"
+    error_title: "Upload Error"
+    error_label: "Error:"
+  
+  execute:
+    page_title: "GoCortex Broken Bank - Command Execution"
+    input_placeholder: "Enter command"
+    submit_button: "Execute"
+    example_text: "Example:"
+    example_commands: "whoami, id, ls -la"
+    output_header: "Command Output:"
+    error_message: "Error executing command:"
+  
+  ping:
+    page_title: "GoCortex Broken Bank - Network Ping"
+    input_placeholder: "Enter IP or hostname"
+    submit_button: "Ping"
+    example_text: "Example:"
+    example_targets: "127.0.0.1, localhost"
+    results_header: "Ping Results:"
+    error_message: "Error executing ping:"
+  
+  dynamic:
+    page_title: "GoCortex Broken Bank - Dynamic Class Loading"
+    jar_url_label: "JAR URL:"
+    jar_url_placeholder: "http://attacker.com/malicious.jar"
+    class_label: "Class:"
+    class_placeholder: "com.evil.Payload"
+    method_label: "Method:"
+    method_placeholder: "execute"
+    submit_button: "Load & Execute"
+    result_header: "Execution Result:"
+    class_loaded_label: "Class loaded:"
+    method_invoked_label: "Method invoked:"
+    return_value_label: "Return value:"
+    error_message: "Error during dynamic class loading:"
+  
+  eval:
+    page_title: "GoCortex Broken Bank - Code Evaluation"
+    engine_label: "Script Engine:"
+    engine_javascript: "JavaScript (Nashorn)"
+    engine_groovy: "Groovy"
+    code_label: "Code:"
+    code_placeholder: "Enter code to evaluate"
+    submit_button: "Evaluate"
+    example_text: "Example JavaScript:"
+    example_code: "java.lang.Runtime.getRuntime().exec('whoami')"
+    result_header: "Evaluation Result:"
+    engine_executed_label: "Engine:"
+    success_message: "Code executed successfully"
+    return_value_label: "Return value:"
+    engine_not_found: "Error: Script engine '{engine}' not found"
+    error_message: "Error during code evaluation:"
+  
+  spring4shell:
+    page_title: "GoCortex Broken Bank - Spring4Shell (CVE-2022-22965)"
+    status_label: "Vulnerability Status:"
+    status_value: "VULNERABLE"
+    spring_version_label: "Spring Framework Version:"
+    spring_version_value: "5.3.0"
+    jdk_version_label: "JDK Version:"
+    cve_label: "CVE:"
+    cve_value: "CVE-2022-22965"
+    cvss_label: "CVSS Score:"
+    cvss_value: "9.8 (Critical)"
+    details_header: "Exploitation Details:"
+    details_intro: "This endpoint uses Spring MVC parameter binding which allows accessing:"
+    details_classloader: "class.module.classLoader.resources.context.parent.pipeline.first"
+    details_valve: "Manipulate Tomcat's AccessLogValve to write JSP webshells"
+    details_execution: "Execute arbitrary commands via uploaded webshell"
+    form_name_label: "Name:"
+    form_name_placeholder: "test"
+    submit_button: "Submit"
+    greeting_prefix: "Hello,"
+    exploitation_header: "Exploitation Example:"
+    step1_title: "Step 1: Deploy JSP Webshell"
+    step2_title: "Step 2: Execute Commands via Webshell"
+    note_label: "Note:"
+    note_text: "Replace YOUR_IP with actual server IP address. The webshell password is 'j'."
+  
+  dashboard:
+    page_title: "GoCortex Broken Bank - Exploit Endpoints"
+    version_info: "Version {version}"
+    tomcat_version: "Tomcat 8.5.0"
+    spring_version: "Spring Framework 5.3.0"
+    jdk_version: "OpenJDK 17"
+    warning_title: "WARNING:"
+    warning_message: "This application contains intentionally vulnerable code for security testing purposes only. Do not deploy in production environments. All endpoints allow remote code execution."
+    
+    upload_endpoint_title: "/upload - Unrestricted File Upload"
+    upload_vulnerability: "Vulnerability:"
+    upload_vulnerability_desc: "Unrestricted file upload allowing JSP webshell deployment"
+    upload_type: "Type:"
+    upload_type_value: "Remote Code Execution (RCE)"
+    upload_test: "Test:"
+    upload_test_desc: "Upload JSP files, WAR archives, or malicious executables"
+    
+    execute_endpoint_title: "/execute - Command Injection (Runtime.exec)"
+    execute_vulnerability: "Vulnerability:"
+    execute_vulnerability_desc: "OS command injection via Runtime.exec()"
+    execute_type: "Type:"
+    execute_type_value: "Remote Code Execution (RCE)"
+    execute_test: "Test:"
+    
+    ping_endpoint_title: "/ping - Command Injection (ProcessBuilder)"
+    ping_vulnerability: "Vulnerability:"
+    ping_vulnerability_desc: "OS command injection via ProcessBuilder with shell invocation"
+    ping_type: "Type:"
+    ping_type_value: "Remote Code Execution (RCE)"
+    ping_test: "Test:"
+    
+    dynamic_endpoint_title: "/dynamic - Dynamic Class Loading"
+    dynamic_vulnerability: "Vulnerability:"
+    dynamic_vulnerability_desc: "Arbitrary class loading from remote JAR files via URLClassLoader"
+    dynamic_type: "Type:"
+    dynamic_type_value: "Remote Code Execution (RCE)"
+    dynamic_test: "Test:"
+    dynamic_test_desc: "Load malicious classes from attacker-controlled servers"
+    
+    eval_endpoint_title: "/eval - Code Evaluation"
+    eval_vulnerability: "Vulnerability:"
+    eval_vulnerability_desc: "Arbitrary code execution via ScriptEngine (JavaScript/Groovy)"
+    eval_type: "Type:"
+    eval_type_value: "Remote Code Execution (RCE)"
+    eval_test: "Test:"
+    
+    spring4shell_endpoint_title: "/spring4shell - Spring4Shell (CVE-2022-22965)"
+    spring4shell_vulnerability: "Vulnerability:"
+    spring4shell_vulnerability_desc: "Spring Framework RCE via class loader manipulation"
+    spring4shell_type: "Type:"
+    spring4shell_type_value: "Remote Code Execution (RCE)"
+    spring4shell_cve: "CVE:"
+    spring4shell_cve_value: "CVE-2022-22965 (CVSS 9.8 Critical)"
+    
+    tomcat_version_label: "Tomcat Version:"
+    tomcat_cves: "8.5.0 (CVE-2020-1938 Ghostcat, CVE-2020-9484 RCE)"
+    spring_framework_label: "Spring Framework:"
+    spring_cve: "5.3.0 (CVE-2022-22965 Spring4Shell)"
+    jdk_version_label: "JDK Version:"
+    jdk_requirement: "17 (Required for Spring4Shell exploitation)"
+    return_link: "Return to Flask Application"

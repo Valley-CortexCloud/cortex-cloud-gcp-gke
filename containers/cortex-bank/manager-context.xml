@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Intentionally vulnerable Tomcat Manager context configuration
+  ALLOWS ALL REMOTE ACCESS (security vulnerability)
+-->
+<Context antiResourceLocking="false" privileged="true" >
+    <!-- 
+      VULNERABLE: RemoteAddrValve completely removed
+      Default Tomcat 8.5.0 restricts manager to localhost only
+      This configuration allows remote access for penetration testing
+    -->
+    
+    <!-- Allow all IP addresses to access manager (intentional vulnerability) -->
+    <!-- 
+    <Valve className="org.apache.catalina.valves.RemoteAddrValve"
+           allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />
+    REMOVED FOR TESTING
+    -->
+</Context>

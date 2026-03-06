@@ -1,0 +1,383 @@
+name: 4 - Deploy Agents to Workloads
+on: workflow_dispatch
+
+jobs:
+  create-install:
+    permissions:
+      id-token: write
+      contents: write
+    runs-on: ubuntu-latest
+    env:
+        CORTEX_URL: ${{ vars.CORTEX_URL }}
+        API_KEY_ID: ${{ vars.CORTEX_API_ID }}
+        API_KEY_SECRET: ${{ secrets.CORTEX_API_SECRET }}
+    outputs:
+      compute_matrix: ${{ steps.list-instances.outputs.matrix }}
+      k8s_release: ${{ steps.xdr_version.outputs.release_name_k8s }}
+      linux_release: ${{ steps.xdr_version.outputs.release_name_linux }}
+      
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth with static SA key
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Get latest XDR Version
+        id: xdr_version
+        run: |
+          install_versions=$(curl -X POST "https://api-${CORTEX_URL}/public_api/v1/distributions/get_versions" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: ${API_KEY_SECRET}" \
+              -H "x-xdr-auth-id: ${API_KEY_ID}" \
+              -d '{}')
+
+          latest_linux=$(echo "$install_versions" | jq -r '.reply.linux[-1]')
+          config_hash=$(echo "${latest_linux}" | sha256sum | cut -c 1-8)
+
+          echo "linux_version=$latest_linux" >> "$GITHUB_OUTPUT"
+          echo "release_name_k8s=xdr-k8s-$latest_linux" >> "$GITHUB_OUTPUT"
+          echo "console_name_k8s=xdr-k8s-${{ vars.GCP_PROJECT_ID }}-$config_hash" >> "$GITHUB_OUTPUT"
+          echo "release_name_linux=xdr-linux-$latest_linux" >> "$GITHUB_OUTPUT"
+          echo "console_name_linux=xdr-linux-${{ vars.GCP_PROJECT_ID }}-$config_hash" >> "$GITHUB_OUTPUT"
+
+      - name: Check if K8s release exists
+        id: check_k8s_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_NAME: ${{ steps.xdr_version.outputs.release_name_k8s }}
+        run: |
+          gh release view ${RELEASE_NAME} &> /dev/null && echo "exists=true" >> $GITHUB_OUTPUT || echo "exists=false" >> $GITHUB_OUTPUT
+
+      - name: Check if Linux release exists
+        id: check_linux_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_NAME: ${{ steps.xdr_version.outputs.release_name_linux }}
+        run: |
+          gh release view ${RELEASE_NAME} &> /dev/null && echo "exists=true" >> $GITHUB_OUTPUT || echo "exists=false" >> $GITHUB_OUTPUT
+
+      - name: Create K8s-XDR-Installation
+        if: steps.check_k8s_release.outputs.exists == 'false'
+        env:
+          VERSION: ${{ steps.xdr_version.outputs.linux_version }}
+          CONSOLE_INSTALL_NAME: ${{ steps.xdr_version.outputs.console_name_k8s }}
+          RELEASE_NAME: ${{ steps.xdr_version.outputs.release_name_k8s }}
+        run: |
+          k8s_install=$(curl -X POST "https://api-${CORTEX_URL}/public_api/v1/distributions/create" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: ${API_KEY_SECRET}" \
+              -H "x-xdr-auth-id: ${API_KEY_ID}" \
+              -d @- << EOF
+              {
+                "request_data": {
+                  "name": "${CONSOLE_INSTALL_NAME}",
+                  "description": "Version: ${VERSION}",
+                  "endpoint_tags": [
+                    "${{ vars.GCP_PROJECT_ID }}"
+                  ],
+                  "package_type": "kubernetes",
+                  "agent_version": "${VERSION}",
+                  "deployment_platform": "standard",
+                  "default_namespace": "cortex-xdr",
+                  "node_selector": {},
+                  "proxy": [],
+                  "run_on_master_node": true,
+                  "run_on_all_nodes": true
+                }
+              }
+          EOF
+            )
+
+          distribution_id=$(echo $k8s_install | jq -r '.reply.distribution_id')
+
+          sleep 15
+          export status_value="Waiting"
+
+          while [ "$status_value" != "Completed" ]; do
+          check_status=$(curl -X POST "https://api-${CORTEX_URL}/public_api/v1/distributions/get_status" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: ${API_KEY_SECRET}" \
+              -H "x-xdr-auth-id: ${API_KEY_ID}" \
+              -d @- <<EOF
+              {
+                "request_data": {
+                    "distribution_id": "$distribution_id"
+                }
+              }
+          EOF
+            )
+
+            status_value=$(echo $check_status | jq -r '.reply.status')
+
+            echo "------------------------------------------------"
+            echo "Package creation state: $status_value"
+
+            # Check if completed
+            if [ "$status_value" == "Completed" ]; then
+                echo "Distribution package creation completed."
+                break
+            fi
+
+            echo "------------------------------------------------"
+            echo "Waiting for install status update..."
+            echo "------------------------------------------------"
+            sleep 15
+          done
+
+          get_install_url=$(curl -X POST "https://api-${CORTEX_URL}/public_api/v1/distributions/get_dist_url" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: ${API_KEY_SECRET}" \
+              -H "x-xdr-auth-id: ${API_KEY_ID}" \
+              -d @- <<EOF
+              {
+                "request_data": {
+                    "distribution_id": "$distribution_id",
+                    "package_type": "yaml"
+                }
+              }
+          EOF
+          )
+
+          install_url=$(echo $get_install_url | jq -r '.reply.distribution_url')
+
+          curl -H "Authorization: ${API_KEY_SECRET}" -H "x-xdr-auth-id: ${API_KEY_ID}" "$install_url" -o "${RELEASE_NAME}.yaml"
+
+      - name: Create GitHub Release for K8s Package
+        if: steps.check_k8s_release.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_NAME: ${{ steps.xdr_version.outputs.release_name_k8s }}
+          CONSOLE_INSTALL_NAME: ${{ steps.xdr_version.outputs.console_name_k8s }}
+        run: |
+          RELEASE_TITLE="K8s XDR Package: (Config: ${RELEASE_NAME})"
+
+          cat <<EOF > release_notes.md
+          Kubernetes YAML install artifact for XDR Agent (Cortex)
+          ---
+          Do ~attackers~ auditors have you worried about your application security? 
+
+          Sleep like a :baby:  by installing the XDR agent on all your production clusters :boom:
+
+          \`\`\`shell
+          kubectl apply -f ${RELEASE_NAME}.yaml
+          \`\`\`
+
+          Cortex Console Install Name: ${CONSOLE_INSTALL_NAME}
+          EOF
+
+          gh release create "${RELEASE_NAME}" \
+            --title "$RELEASE_TITLE" \
+            --notes-file release_notes.md
+
+          gh release upload "${RELEASE_NAME}" "${RELEASE_NAME}.yaml" --clobber
+
+      - name: Create Linux XDR Installation
+        if: steps.check_linux_release.outputs.exists == 'false'
+        env:
+          VERSION: ${{ steps.xdr_version.outputs.linux_version }}
+          CONSOLE_INSTALL_NAME: ${{ steps.xdr_version.outputs.console_name_linux }}
+          RELEASE_NAME: ${{ steps.xdr_version.outputs.release_name_linux }}
+        run: |
+          create_install=$(curl -X POST "https://api-${CORTEX_URL}/public_api/v1/distributions/create" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: ${API_KEY_SECRET}" \
+              -H "x-xdr-auth-id: ${API_KEY_ID}" \
+              -d @- << EOF
+              {
+                "request_data": {
+                  "name": "${CONSOLE_INSTALL_NAME}",
+                  "description": "Version: ${VERSION}",
+                  "endpoint_tags": [
+                    "${{ vars.GCP_PROJECT_ID }}"
+                  ],
+                  "package_type": "standalone",
+                  "agent_version": "${VERSION}",
+                  "platform": "linux"
+                }
+              }
+          EOF
+            )
+
+          install_id=$(echo $create_install | jq -r '.reply.distribution_id')
+
+          sleep 15
+          export status_value="Waiting"
+
+          while [ "$status_value" != "Completed" ]; do
+          check_status=$(curl -X POST "https://api-${CORTEX_URL}/public_api/v1/distributions/get_status" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: ${API_KEY_SECRET}" \
+              -H "x-xdr-auth-id: ${API_KEY_ID}" \
+              -d @- <<EOF
+              {
+                "request_data": {
+                    "distribution_id": "$install_id"
+                }
+              }
+          EOF
+            )
+
+            status_value=$(echo $check_status | jq -r '.reply.status')
+
+            if [ "$status_value" == null ]; then
+                  echo "Error with POST request. Exiting, check logs."
+                  exit 1
+            fi
+
+            echo "------------------------------------------------"
+            echo "Package creation state: $status_value"
+
+            if [ "$status_value" == "Completed" ]; then
+                echo "Distribution package creation completed."
+                break
+            fi
+
+            echo "------------------------------------------------"
+            echo "Waiting for install status update..."
+            echo "------------------------------------------------"
+            sleep 15
+          done
+
+          get_install_url=$(curl -X POST "https://api-${CORTEX_URL}/public_api/v1/distributions/get_dist_url" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: ${API_KEY_SECRET}" \
+              -H "x-xdr-auth-id: ${API_KEY_ID}" \
+              -d @- <<EOF
+              {
+                "request_data": {
+                    "distribution_id": "$install_id",
+                    "package_type": "sh"
+                }
+              }
+          EOF
+          )
+
+          install_url=$(echo $get_install_url | jq -r '.reply.distribution_url')
+
+          curl -H "Authorization: ${API_KEY_SECRET}" -H "x-xdr-auth-id: ${API_KEY_ID}" "$install_url" -o "${RELEASE_NAME}.tar.gz"
+
+      - name: Upload Linux XDR TAR to GH release
+        if: steps.check_linux_release.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_NAME: ${{ steps.xdr_version.outputs.release_name_linux }}
+          CONSOLE_INSTALL_NAME: ${{ steps.xdr_version.outputs.console_name_linux }}          
+        run: |
+          RELEASE_TITLE="Linux XDR Package: (Config: ${RELEASE_NAME})"
+
+          cat <<EOF > release_notes.md
+          Linux tar file install artifact for XDR Agent (Cortex)
+          ---
+          Do ~attackers~ auditors have you worried about your application security? 
+
+          Sleep like a :baby:  by installing the XDR agent on all your production Linux systems :boom:
+
+          \`\`\`shell
+          kubectl apply -f ${RELEASE_NAME}.yaml
+          \`\`\`
+
+          Cortex Console Install Name: ${CONSOLE_INSTALL_NAME}
+          EOF
+
+          gh release create "${RELEASE_NAME}" \
+            --title "$RELEASE_TITLE" \
+            --notes-file release_notes.md
+
+          gh release upload "${RELEASE_NAME}" "${RELEASE_NAME}.tar.gz" --clobber
+
+      - name: List compute instances
+        id: list-instances
+        continue-on-error: false
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          compute_instances=$(gcloud compute instances list --format="json" | jq -c '[.[] | select(.labels["goog-gke-node"] == null and .labels["require_security_agent"] == "true") | .name]')
+          echo "matrix=$compute_instances" >> $GITHUB_OUTPUT           
+  
+  k8s-agent-deploy:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_NAME: ${{ needs.create-install.outputs.k8s_release }}    
+    needs: create-install
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth with static SA key
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: gcloud is ready
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Return GKE cluster name
+        id: gke-cluster
+        run: |
+          set -euo pipefail
+          CLUSTER_NAME=$(gcloud container clusters list --filter="name:*" --format="value(name)")
+          echo "cluster_name=$CLUSTER_NAME" >> "$GITHUB_OUTPUT"          
+
+      - name: Get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v3'
+        with:
+          cluster_name: ${{ steps.gke-cluster.outputs.cluster_name }}
+          location: 'us-central1'        
+
+      - name: Install K8s XDR agent
+        working-directory: installs/k8sagent
+        continue-on-error: false
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "${RELEASE_NAME}" -p "${RELEASE_NAME}.yaml" --clobber
+          kubectl apply -f .
+
+  agent-deploy:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_NAME: ${{ needs.create-install.outputs.linux_release }}
+    strategy:
+      fail-fast: true
+      matrix:
+        instances: ${{ fromJson(needs.create-install.outputs.compute_matrix) }}
+    needs: create-install
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth with static SA key
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: gcloud is ready
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Install XDR agent
+        continue-on-error: false
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "${RELEASE_NAME}" -p "${RELEASE_NAME}.tar.gz" --clobber
+
+          gcloud compute scp "${RELEASE_NAME}.tar.gz" ${{ matrix.instances }}:/home/runner --zone=us-central1-a
+
+          gcloud compute ssh ${{ matrix.instances }} --zone=us-central1-a --quiet --command='
+            RELEASE_NAME="'"${RELEASE_NAME}"'"
+
+            tar -xvzf "${RELEASE_NAME}.tar.gz" -C /tmp/
+            sudo chmod +x /tmp/cortex*.sh
+            sudo mkdir -p /etc/panw
+            sudo cp /tmp/cortex.conf /etc/panw/
+            XDR_INSTALL=$(ls /tmp/cortex-*.sh | head -n 1)
+            sudo $XDR_INSTALL
+            rm ${RELEASE_NAME}.tar.gz
+            sudo rm /tmp/cortex-*.sh
+          '

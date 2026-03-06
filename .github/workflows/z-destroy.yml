@@ -1,0 +1,170 @@
+name: Destroy Environment
+on: workflow_dispatch
+
+jobs:
+  destroy:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth with static SA key
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: gcloud is ready
+        uses: google-github-actions/setup-gcloud@v2
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Return TF state bucket
+        id: state-bucket
+        run: |
+          set -euo pipefail
+          BUCKET=$(gcloud storage buckets list --filter="name:terraform-state" --format="value(name)")
+          echo "bucket=$BUCKET" >> "$GITHUB_OUTPUT"
+
+      - name: Remove Cortex Cloud instance from console
+        working-directory: installs/onboard
+        env:
+          CORTEX_URL: ${{ vars.CORTEX_URL }}
+          API_KEY_ID: ${{ vars.CORTEX_API_ID }}
+          API_KEY_SECRET: ${{ secrets.CORTEX_API_SECRET }}
+        run: |
+
+          export CORTEX_URL="${{ vars.CORTEX_URL }}"
+          export API_KEY_ID="${{ vars.CORTEX_API_ID }}"
+          export API_KEY_SECRET="${{ secrets.CORTEX_API_SECRET }}"
+        
+          template_response=$(curl -X POST "https://api-$CORTEX_URL/public_api/v1/cloud_onboarding/get_instances" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: $API_KEY_SECRET" \
+              -H "x-xdr-auth-id: $API_KEY_ID" \
+              -d @- << EOF
+              {
+                "request_data" : {
+                  "filter_data" : {
+                    "sort" : [ {
+                      "FIELD" : "STATUS",
+                      "ORDER" : "DESC"
+                    } ],
+                    "paging" : {
+                      "from" : 0,
+                      "to" : 50
+                    },
+                    "filter" : {
+                      "AND" : [ {
+                        "SEARCH_FIELD" : "INSTANCE_NAME",
+                        "SEARCH_TYPE" : "EQ",
+                        "SEARCH_VALUE" : "GCP-${{ vars.GCP_PROJECT_ID }}"
+                      }
+                      ]
+                    }
+                  }
+                }
+              }
+          EOF
+            )
+
+          instance_id=$(echo $template_response | jq -r '.reply.DATA[0].instance_id') 
+
+          echo "----------------------------------------------"
+          echo "Instance id: $instance_id"
+          echo "----------------------------------------------"
+
+          if [ -z "$instance_id" ] || [ "$instance_id" == "null" ]; then
+            echo "Could not retrieve instance id, exiting."
+            exit 1
+          fi    
+
+          template_response=$(curl -X POST "https://api-$CORTEX_URL/public_api/v1/cloud_onboarding/delete_instance" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: $API_KEY_SECRET" \
+              -H "x-xdr-auth-id: $API_KEY_ID" \
+              -d @- << EOF
+              {
+                "request_data" : {
+                  "ids": [ "$instance_id" ]
+                }
+              }
+          EOF
+            )
+
+            
+      - name: Delete Asset Group
+        env:
+          CORTEX_URL: ${{ vars.CORTEX_URL }}
+          API_KEY_ID: ${{ vars.CORTEX_API_ID }}
+          API_KEY_SECRET: ${{ secrets.CORTEX_API_SECRET }}
+        run: |
+
+          export CORTEX_URL="${{ vars.CORTEX_URL }}"
+          export API_KEY_ID="${{ vars.CORTEX_API_ID }}"
+          export API_KEY_SECRET="${{ secrets.CORTEX_API_SECRET }}"
+
+          asset_group_check=$(curl -X POST "https://api-$CORTEX_URL/public_api/v1/asset-groups" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: $API_KEY_SECRET" \
+              -H "x-xdr-auth-id: $API_KEY_ID" \
+              -d @- << EOF
+              {
+                  "request_data":
+                  {
+                    "filters": {
+                        "AND": [
+                        {
+                            "SEARCH_FIELD": "XDM.ASSET_GROUP.NAME",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "PAN-GCP-Lab-${{ vars.GCP_PROJECT_ID }}"
+                        }
+                        ]
+                    },
+                    "sort": [
+                        {
+                        "FIELD": "XDM.ASSET_GROUP.LAST_UPDATE_TIME",
+                        "ORDER": "DESC"
+                        }
+                    ],
+                    "search_from": 0,
+                    "search_to": 1000
+                  }
+              }
+          EOF
+            )
+          
+          group_id=$(echo $asset_group_check | jq -r '.reply.data[0]."XDM.ASSET_GROUP.ID"')  
+
+          if [ -z "$group_id" ] || [ "$group_id" == "null" ]; then
+            echo "Could not find asset group"
+            exit 1
+          fi          
+        
+          curl -X POST "https://api-$CORTEX_URL/public_api/v1/asset-groups/delete/$group_id" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: $API_KEY_SECRET" \
+              -H "x-xdr-auth-id: $API_KEY_ID" \
+           
+      - name: Download onboard artifact and Destroy Cortex Cloud TF
+        working-directory: installs/onboard
+        env:
+          TF_BUCKET: ${{ steps.state-bucket.outputs.bucket }}
+          STATE_PATH: "cortex-onboard"
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          releaseName=$(gh release list --json tagName --jq 'map(select(.tagName | test("CortexOnboard-prod-.*"))) | .[0].tagName' | cat)
+          gh release download $releaseName -p 'onboard.tar.gz' --clobber
+          tar -xvzf onboard.tar.gz 
+          terraform init -reconfigure -backend-config="bucket=${TF_BUCKET}" -backend-config="prefix=${STATE_PATH}"
+          terraform destroy -auto-approve --var=project_id=${{ vars.GCP_PROJECT_ID }} --var=connector_id="PAN-GCP-${{ vars.GCP_PROJECT_ID }}" -var-file="template_params.tfvars"
+
+      # - name: Terraform Destroy Destroy Infra
+      #   working-directory: terraform/
+      #   env:
+      #     TF_BUCKET: ${{ steps.state-bucket.outputs.bucket }}
+      #     STATE_PATH: "pov-infra"
+      #   run: |
+      #     terraform init -reconfigure -backend-config="bucket=${TF_BUCKET}" -backend-config="prefix=${STATE_PATH}"
+      #     terraform destroy -auto-approve --var=project_id=${{ vars.GCP_PROJECT_ID }}

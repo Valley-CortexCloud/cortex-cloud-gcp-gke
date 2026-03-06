@@ -1,0 +1,498 @@
+# GoCortex Broken Bank 현지화 설정
+country_code: "KR"
+currency_symbol: "₩"
+date_format: "YYYY-MM-DD"
+support_phone: "+82 2 1234 5678"
+legal_disclaimer_text: |
+  경고: 이 애플리케이션은 교육 및 CI/CD 보안 테스트 목적으로만 사용됩니다.
+  의도적으로 취약한 코드가 포함되어 있으며 절대로 프로덕션 환경에 배포해서는 안 됩니다.
+  자동화된 보안 테스트 파이프라인을 위해 격리된 환경에서만 사용하십시오.
+brand_colours:
+  primary: "#00cc66"     # Banking green
+  secondary: "#000000"   # Pure black
+  accent: "#00ff80"      # Bright green accent
+  dark: "#0a0a0a"        # Deep black
+  light: "#1a1a1a"       # Dark grey
+  warning: "#ffcc00"     # Gold warning
+landing_copy:
+  title: "GoCortex Broken Bank"
+  subtitle: "디지털 뱅킹 플랫폼"
+  welcome_message: "GoCortex Broken Bank와 함께 차세대 디지털 뱅킹을 경험하세요"
+  description: |
+    최첨단 기술과 포괄적인 계좌 관리 솔루션을 갖춘 
+    현대적인 금융 요구를 위해 설계된 안전하고 빠르며 신뢰할 수 있는 
+    디지털 뱅킹 서비스를 GoCortex Broken Bank에서 제공합니다.
+  features:
+    - "연중무휴 온라인 뱅킹 액세스"
+    - "고급 보안 기능"
+    - "모바일 뱅킹 솔루션"
+    - "투자 포트폴리오 관리"
+    - "실시간 거래 모니터링"
+banking_services:
+  - name: "개인 뱅킹"
+    endpoints: ["/search", "/comment", "/ping"]
+    description: "종합적인 개인 뱅킹 솔루션 및 계좌 관리"
+    severity: "CRITICAL"
+  - name: "비즈니스 뱅킹"
+    endpoints: ["/debug", "/log"]
+    description: "고급 비즈니스 뱅킹 도구 및 기업 금융 서비스"
+    severity: "HIGH"
+  - name: "투자 서비스"
+    endpoints: ["/debug"]
+    description: "전문 투자 자문 및 포트폴리오 관리 솔루션"
+    severity: "CRITICAL"
+  - name: "디지털 서비스"
+    endpoints: ["/search", "/comment"]
+    description: "모바일 뱅킹, 온라인 결제 및 디지털 지갑 통합"
+    severity: "HIGH"
+# 사이버 보안 검증 목적만을 위한 테스트 구성
+# 이는 자동화된 보안 스캐너가 위협 탐지 검증에 사용하는 가상의 URL입니다
+security_testing:
+  test_endpoints:
+    malware_filter_test: "https://urlfiltering.paloaltonetworks.com/test-malware"  # Official Palo Alto test URL
+    c2_simulation: "c2.sigre.xyz"        # Command and control test domain
+    botnet_simulation: "botnet.sigre.xyz"  # Botnet test domain
+    malware_simulation: "malware.sigre.xyz"  # Malware test domain
+    hacker_simulation: "hacker.sigre.xyz"    # Hacker test domain
+
+# Flask UI 현지화 (Jinja2 템플릿에서 사용)
+navigation:
+  home: "홈"
+  services: "서비스"
+  security: "보안"
+
+dashboard:
+  account_overview: "계좌 개요"
+  total_balance: "총 잔액"
+  active_cards: "활성 카드"
+  monthly_growth: "월별 성장"
+  member_status: "회원 상태"
+
+buttons:
+  explore_services: "서비스 둘러보기"
+  security_info: "보안 정보"
+  open_account: "계좌 개설"
+  activate_service: "서비스 활성화"
+  learn_more: "더 알아보기"
+  submit: "제출"
+  reset: "재설정"
+  view_details: "세부 정보 보기"
+  transfer_now: "지금 송금"
+  register_company: "회사 등록"
+  schedule_consultation: "상담 예약"
+  invest_now: "지금 투자"
+  join_scheme: "스킴 참여"
+  calculate_returns: "수익 계산"
+  book_masterclass: "마스터클래스 예약"
+
+promotional_banner:
+  new_customer_offer: "신규 고객 혜택"
+  offer_text: "오늘 첫 GoCortex Broken Bank 계좌를 개설하고 적격 예금으로 ₩50,000 보너스를 받으세요."
+
+sections:
+  banking_features_title: "뱅킹 기능"
+  banking_features_description: "귀하의 성공을 위해 설계된 종합 금융 서비스"
+  our_services_title: "우리의 서비스"
+  our_services_description: "귀하의 재무 목표에 맞춘 종합 뱅킹 솔루션을 발견하세요"
+
+exploit_section:
+  title: "고급 보안 테스트 - 익스플로잇 엔드포인트"
+  description: "포괄적인 침투 테스트를 위한 Java/Tomcat 기반 원격 코드 실행 엔드포인트"
+  warning: "경고: 이 엔드포인트는 임의 코드 실행을 허용합니다. 보안 테스트 전용입니다."
+  tomcat_server_label: "Tomcat 서버:"
+  open_dashboard_button: "익스플로잇 애플리케이션 대시보드 열기"
+  
+  file_upload:
+    title: "파일 업로드 RCE"
+    description: "JSP 웹셸 배포를 허용하는 무제한 파일 업로드"
+    button_text: "업로드 테스트"
+  
+  command_execution:
+    title: "명령 실행"
+    description: "Runtime.exec() 명령 인젝션 취약점"
+    button_text: "실행 테스트"
+  
+  network_ping:
+    title: "네트워크 핑"
+    description: "셸을 사용한 ProcessBuilder 명령 인젝션"
+    button_text: "핑 테스트"
+  
+  dynamic_class_loading:
+    title: "동적 클래스 로딩"
+    description: "URLClassLoader 임의 코드 실행"
+    button_text: "동적 테스트"
+  
+  code_evaluation:
+    title: "코드 평가"
+    description: "ScriptEngine JavaScript/Groovy 실행"
+    button_text: "평가 테스트"
+  
+  spring4shell:
+    title: "Spring4Shell"
+    description: "CVE-2022-22965 RCE (CVSS 9.8 Critical)"
+    button_text: "Spring4Shell 테스트"
+
+cta:
+  title: "뱅킹을 시작할 준비가 되셨나요?"
+  description: "재무 관리를 위해 GoCortex Broken Bank를 신뢰하는 수백만 고객과 함께하세요"
+
+footer:
+  banking_services_title: "뱅킹 서비스"
+  personal_banking: "개인 뱅킹"
+  business_accounts: "비즈니스 계좌"
+  investment_services: "투자 서비스"
+  digital_banking: "디지털 뱅킹"
+  copyright_prefix: "Created by Simon Sigre, GoCortex."
+
+# 뱅킹 페이지 콘텐츠
+pages:
+  netbank:
+    title: "개인 넷뱅크"
+    subtitle: "계좌 대시보드"
+    welcome_message: "개인 뱅킹 대시보드에 오신 것을 환영합니다"
+    balance:
+      current_balance_label: "현재 잔액"
+      available_funds_label: "사용 가능 자금"
+      account_number_label: "계좌 번호"
+      sort_code_label: "정렬 코드"
+    transactions:
+      section_title: "최근 거래"
+      headers:
+        - "날짜"
+        - "설명"
+        - "금액"
+        - "잔액"
+      tiers:
+        high_balance:
+          - date: "2024-11-13"
+            description: "파라다이스 시티 카지노 - VIP 룸"
+            amount: "-125000000"
+            type: "debit"
+          - date: "2024-11-12"
+            description: "청담동 펜트하우스 계약금"
+            amount: "-2850000000"
+            type: "debit"
+          - date: "2024-11-11"
+            description: "강남 골프 클럽 - 연회비"
+            amount: "-18500000"
+            type: "debit"
+          - date: "2024-11-10"
+            description: "청담 에르메스 - 쇼핑"
+            amount: "-8750000"
+            type: "debit"
+          - date: "2024-11-09"
+            description: "압구정 루이비통 - 구매"
+            amount: "-6200000"
+            type: "debit"
+          - date: "2024-11-08"
+            description: "한남동 빌라 월세"
+            amount: "-12000000"
+            type: "debit"
+          - date: "2024-11-07"
+            description: "급여 입금 - 임원 보상"
+            amount: "+125000000"
+            type: "credit"
+          - date: "2024-11-06"
+            description: "투자 수익 - 포트폴리오 배당금"
+            amount: "+45000000"
+            type: "credit"
+        low_balance:
+          - date: "2024-11-13"
+            description: "GS25 강남점 - 커피 & 간식"
+            amount: "-12500"
+            type: "debit"
+          - date: "2024-11-12"
+            description: "맥도날드 드라이브 스루 - 저녁"
+            amount: "-18950"
+            type: "debit"
+          - date: "2024-11-11"
+            description: "다이소 명동점 - 생활용품"
+            amount: "-67400"
+            type: "debit"
+          - date: "2024-11-10"
+            description: "배달의민족 - 야식 주문"
+            amount: "-34800"
+            type: "debit"
+          - date: "2024-11-09"
+            description: "이마트 - 식료품"
+            amount: "-89750"
+            type: "debit"
+          - date: "2024-11-08"
+            description: "롯데마트 - 주간 쇼핑"
+            amount: "-112300"
+            type: "debit"
+          - date: "2024-11-07"
+            description: "급여 입금"
+            amount: "+2450000"
+            type: "credit"
+          - date: "2024-11-06"
+            description: "서울 지하철 T-money 충전"
+            amount: "-40000"
+            type: "debit"
+          - date: "2024-11-05"
+            description: "넷플릭스 구독"
+            amount: "-16990"
+            type: "debit"
+          - date: "2024-11-04"
+            description: "명동 포장마차 - 음료"
+            amount: "-54900"
+            type: "debit"
+  
+  business:
+    title: "비즈니스 뱅킹 서비스"
+    subtitle: "기업 금융 솔루션"
+    description: "정교한 비즈니스 운영을 위한 고급 역외 뱅킹 서비스"
+    cards:
+      - id: "cayman_transfer"
+        title: "케이맨 제도 전신 송금"
+        description: "완전한 재량권과 최소한의 보고 요구 사항으로 케이맨 제도 기업 계좌로 안전한 국제 전신 송금"
+        button_key: "transfer_now"
+      - id: "shell_company"
+        title: "페이퍼 컴퍼니 등록"
+        description: "영국령 버진 아일랜드, 파나마, 델라웨어를 포함한 세금 친화적인 관할 구역에서 당일 설립이 가능한 신속한 페이퍼 컴퍼니 설립"
+        button_key: "register_company"
+      - id: "tax_haven"
+        title: "조세 피난처 컨설팅"
+        description: "글로벌 세금 의무를 최소화하기 위한 역외 세금 최적화 전략 및 국제 기업 구조화에 대한 전문 자문 서비스"
+        button_key: "schedule_consultation"
+      - id: "crypto_mixer"
+        title: "기업용 암호화폐 믹서"
+        description: "여러 블록체인 네트워크에서 향상된 거래 프라이버시 및 출처 난독화를 위한 엔터프라이즈급 암호화폐 텀블링 서비스"
+        button_key: "activate_service"
+  
+  investments:
+    title: "투자 서비스"
+    subtitle: "재산 성장 기회"
+    description: "보장된 탁월한 수익률을 가진 독점 투자 기회"
+    marketing_copy: "독자적인 투자 전략을 통해 재정적 자유를 달성한 수천 명의 만족스러운 투자자와 함께하세요"
+    cards:
+      - id: "nigerian_prince"
+        title: "나이지리아 왕자 투자 펀드"
+        description: "왕실 가족 구성원의 자산 이전을 지원할 수 있는 독점 기회. 30일 이내에 10,000% 수익 보장. 제한된 자리!"
+        guaranteed_return: "10,000% ROI"
+        button_key: "invest_now"
+      - id: "pyramid_builder"
+        title: "피라미드 스킴 빌더 플랫폼"
+        description: "혁명적인 다단계 마케팅 시스템. 5명의 친구만 모집하면 영원한 수동 소득! 자신의 사장이 되세요!"
+        guaranteed_return: "무제한 수익 가능성"
+        button_key: "join_scheme"
+      - id: "ponzi_calculator"
+        title: "폰지 수익 계산기"
+        description: "독자적인 투자 알고리즘을 사용하여 보장된 수익을 계산하세요. 초기 투자자는 신규 회원 기여금에서 우선 분배를 받습니다"
+        guaranteed_return: "주당 8% 수익"
+        button_key: "calculate_returns"
+      - id: "get_rich_masterclass"
+        title: "빨리 부자 되기 마스터클래스"
+        description: "은행이 알려주고 싶지 않은 비밀 재산 축적 전략을 배우세요! 독점 웨비나에 참여하고 오늘부터 집에서 돈을 벌기 시작하세요!"
+        guaranteed_return: "90일 내 재정적 자유"
+        button_key: "book_masterclass"
+  
+  digital:
+    title: "디지털 뱅킹 서비스"
+    subtitle: "익명 금융 솔루션"
+    description: "현대 시대를 위한 개인 정보 보호 중심 디지털 뱅킹 서비스"
+    cards:
+      - id: "crypto_tumbler"
+        title: "암호화폐 텀블러"
+        description: "최대 개인 정보 보호를 위해 비트코인, 이더리움, 모네로 네트워크에서 블록체인 거래 추적을 난독화하는 고급 코인 믹싱 서비스"
+        button_key: "activate_service"
+      - id: "untraceable_transfers"
+        title: "추적 불가능한 전신 송금"
+        description: "완전한 익명성을 가진 국제 송금. KYC 요구 사항 없음, 거래 모니터링 없음, 서류 추적 없음"
+        button_key: "transfer_now"
+      - id: "anonymous_accounts"
+        title: "익명 계좌 개설"
+        description: "신원 확인이 필요 없는 완전히 익명인 은행 계좌를 개설하세요. 암호화폐 자금 옵션으로 즉시 활성화"
+        button_key: "open_account"
+      - id: "burner_accounts"
+        title: "버너 계좌 서비스"
+        description: "일회용 거래에 완벽한 임시 일회용 은행 계좌. 자동 소멸 기능으로 30일 후 모든 기록 삭제"
+        button_key: "activate_service"
+  
+  signup:
+    title: "오늘 계좌를 개설하세요"
+    subtitle: "GoCortex Broken Bank 가입"
+    description: "확인 없이 몇 초 만에 계좌를 만드세요"
+    form:
+      full_name_label: "전체 이름"
+      full_name_placeholder: "전체 이름을 입력하세요"
+      email_label: "이메일 주소"
+      email_placeholder: "이메일을 입력하세요"
+      password_label: "비밀번호"
+      password_placeholder: "비밀번호를 선택하세요"
+      account_type_label: "계좌 유형"
+      account_types:
+        - value: "personal"
+          label: "개인 뱅킹"
+        - value: "business"
+          label: "비즈니스 계좌"
+        - value: "offshore"
+          label: "역외 계좌"
+        - value: "anonymous"
+          label: "익명 계좌"
+      submit_button_key: "submit"
+      reset_button_key: "reset"
+    success:
+      title: "계좌가 성공적으로 생성되었습니다!"
+      message: "확인 없이 계좌가 생성되었습니다"
+      account_number_prefix: "계좌 번호:"
+      sort_code_prefix: "정렬 코드:"
+      next_steps: "이제 모든 뱅킹 서비스에 즉시 액세스할 수 있습니다"
+
+# Tomcat 서블릿 현지화 (exploit-app Java 서블릿에서 사용)
+tomcat_servlets:
+  common:
+    app_name: "GoCortex Broken Bank"
+    version_label: "버전 {version}"
+    vulnerability_tag: "의도적으로 취약한 애플리케이션"
+    error_prefix: "[오류]"
+    exit_code_label: "종료 코드:"
+  
+  upload:
+    page_title: "GoCortex Broken Bank - 파일 업로드"
+    description: "제한 없이 파일 업로드 (JSP, WAR, EXE 등)"
+    file_input_label: "file"
+    submit_button: "업로드"
+    success_message: "파일이 성공적으로 업로드되었습니다:"
+    upload_path_label: "업로드 경로:"
+    access_link_text: "다음에서 액세스:"
+    error_title: "업로드 오류"
+    error_label: "오류:"
+  
+  execute:
+    page_title: "GoCortex Broken Bank - 명령 실행"
+    input_placeholder: "명령 입력"
+    submit_button: "실행"
+    example_text: "예시:"
+    example_commands: "whoami, id, ls -la"
+    output_header: "명령 출력:"
+    error_message: "명령 실행 오류:"
+  
+  ping:
+    page_title: "GoCortex Broken Bank - 네트워크 핑"
+    input_placeholder: "IP 또는 호스트명 입력"
+    submit_button: "핑"
+    example_text: "예시:"
+    example_targets: "127.0.0.1, localhost"
+    results_header: "핑 결과:"
+    error_message: "핑 실행 오류:"
+  
+  dynamic:
+    page_title: "GoCortex Broken Bank - 동적 클래스 로딩"
+    jar_url_label: "JAR URL:"
+    jar_url_placeholder: "http://attacker.com/malicious.jar"
+    class_label: "클래스:"
+    class_placeholder: "com.evil.Payload"
+    method_label: "메소드:"
+    method_placeholder: "execute"
+    submit_button: "로드 및 실행"
+    result_header: "실행 결과:"
+    class_loaded_label: "로드된 클래스:"
+    method_invoked_label: "호출된 메소드:"
+    return_value_label: "반환 값:"
+    error_message: "동적 클래스 로딩 중 오류:"
+  
+  eval:
+    page_title: "GoCortex Broken Bank - 코드 평가"
+    engine_label: "스크립트 엔진:"
+    engine_javascript: "JavaScript (Nashorn)"
+    engine_groovy: "Groovy"
+    code_label: "코드:"
+    code_placeholder: "평가할 코드 입력"
+    submit_button: "평가"
+    example_text: "JavaScript 예시:"
+    example_code: "java.lang.Runtime.getRuntime().exec('whoami')"
+    result_header: "평가 결과:"
+    engine_executed_label: "엔진:"
+    success_message: "코드가 성공적으로 실행되었습니다"
+    return_value_label: "반환 값:"
+    engine_not_found: "오류: 스크립트 엔진 '{engine}'을(를) 찾을 수 없습니다"
+    error_message: "코드 평가 중 오류:"
+  
+  spring4shell:
+    page_title: "GoCortex Broken Bank - Spring4Shell (CVE-2022-22965)"
+    status_label: "취약점 상태:"
+    status_value: "취약함"
+    spring_version_label: "Spring Framework 버전:"
+    spring_version_value: "5.3.0"
+    jdk_version_label: "JDK 버전:"
+    cve_label: "CVE:"
+    cve_value: "CVE-2022-22965"
+    cvss_label: "CVSS 점수:"
+    cvss_value: "9.8 (Critical)"
+    details_header: "익스플로잇 세부 정보:"
+    details_intro: "이 엔드포인트는 다음에 액세스할 수 있는 Spring MVC 매개변수 바인딩을 사용합니다:"
+    details_classloader: "class.module.classLoader.resources.context.parent.pipeline.first"
+    details_valve: "Tomcat의 AccessLogValve를 조작하여 JSP 웹셸 작성"
+    details_execution: "업로드된 웹셸을 통해 임의 명령 실행"
+    form_name_label: "이름:"
+    form_name_placeholder: "test"
+    submit_button: "제출"
+    greeting_prefix: "안녕하세요,"
+    exploitation_header: "익스플로잇 예시:"
+    step1_title: "1단계: JSP 웹셸 배포"
+    step2_title: "2단계: 웹셸을 통한 명령 실행"
+    note_label: "참고:"
+    note_text: "YOUR_IP를 실제 서버 IP 주소로 교체하세요. 웹셸 비밀번호는 'j'입니다."
+  
+  dashboard:
+    page_title: "GoCortex Broken Bank - 익스플로잇 엔드포인트"
+    version_info: "버전 {version}"
+    tomcat_version: "Tomcat 8.5.0"
+    spring_version: "Spring Framework 5.3.0"
+    jdk_version: "OpenJDK 17"
+    warning_title: "경고:"
+    warning_message: "이 애플리케이션은 보안 테스트 목적으로만 의도적으로 취약한 코드를 포함하고 있습니다. 프로덕션 환경에 배포하지 마십시오. 모든 엔드포인트는 원격 코드 실행을 허용합니다."
+    
+    upload_endpoint_title: "/upload - 무제한 파일 업로드"
+    upload_vulnerability: "취약점:"
+    upload_vulnerability_desc: "JSP 웹셸 배포를 허용하는 무제한 파일 업로드"
+    upload_type: "유형:"
+    upload_type_value: "원격 코드 실행 (RCE)"
+    upload_test: "테스트:"
+    upload_test_desc: "JSP 파일, WAR 아카이브 또는 악성 실행 파일 업로드"
+    
+    execute_endpoint_title: "/execute - 명령 인젝션 (Runtime.exec)"
+    execute_vulnerability: "취약점:"
+    execute_vulnerability_desc: "Runtime.exec()를 통한 OS 명령 인젝션"
+    execute_type: "유형:"
+    execute_type_value: "원격 코드 실행 (RCE)"
+    execute_test: "테스트:"
+    
+    ping_endpoint_title: "/ping - 명령 인젝션 (ProcessBuilder)"
+    ping_vulnerability: "취약점:"
+    ping_vulnerability_desc: "셸 호출을 사용한 ProcessBuilder를 통한 OS 명령 인젝션"
+    ping_type: "유형:"
+    ping_type_value: "원격 코드 실행 (RCE)"
+    ping_test: "테스트:"
+    
+    dynamic_endpoint_title: "/dynamic - 동적 클래스 로딩"
+    dynamic_vulnerability: "취약점:"
+    dynamic_vulnerability_desc: "URLClassLoader를 통한 원격 JAR 파일에서 임의 클래스 로딩"
+    dynamic_type: "유형:"
+    dynamic_type_value: "원격 코드 실행 (RCE)"
+    dynamic_test: "테스트:"
+    dynamic_test_desc: "공격자가 제어하는 서버에서 악성 클래스 로드"
+    
+    eval_endpoint_title: "/eval - 코드 평가"
+    eval_vulnerability: "취약점:"
+    eval_vulnerability_desc: "ScriptEngine (JavaScript/Groovy)를 통한 임의 코드 실행"
+    eval_type: "유형:"
+    eval_type_value: "원격 코드 실행 (RCE)"
+    eval_test: "테스트:"
+    
+    spring4shell_endpoint_title: "/spring4shell - Spring4Shell (CVE-2022-22965)"
+    spring4shell_vulnerability: "취약점:"
+    spring4shell_vulnerability_desc: "클래스 로더 조작을 통한 Spring Framework RCE"
+    spring4shell_type: "유형:"
+    spring4shell_type_value: "원격 코드 실행 (RCE)"
+    spring4shell_cve: "CVE:"
+    spring4shell_cve_value: "CVE-2022-22965 (CVSS 9.8 Critical)"
+    
+    tomcat_version_label: "Tomcat 버전:"
+    tomcat_cves: "8.5.0 (CVE-2020-1938 Ghostcat, CVE-2020-9484 RCE)"
+    spring_framework_label: "Spring Framework:"
+    spring_cve: "5.3.0 (CVE-2022-22965 Spring4Shell)"
+    jdk_version_label: "JDK 버전:"
+    jdk_requirement: "17 (Spring4Shell 익스플로잇에 필요)"
+    return_link: "Flask 애플리케이션으로 돌아가기"

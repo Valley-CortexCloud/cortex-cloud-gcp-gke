@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Simon Sigre, GoCortex">
+    <meta name="description" content="GoCortex Broken Bank - Intentionally vulnerable banking application for CI/CD security testing">
+    <title>{% block title %}{{ locale.landing_copy.title }}{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
+    
+    <!-- Feather Icons -->
+    <script src="{{ url_for('static', filename='vendor/feather/feather.min.js') }}"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/banking-theme.css') }}">
+    
+    <style>
+        :root {
+            --primary-color: {{ locale.brand_colours.primary }};
+            --secondary-color: {{ locale.brand_colours.secondary }};
+            --accent-color: {{ locale.brand_colours.accent }};
+            --dark-color: {{ locale.brand_colours.dark }};
+            --light-color: {{ locale.brand_colours.light }};
+            --warning-color: {{ locale.brand_colours.warning }};
+        }
+    </style>
+</head>
+<body{% if request.endpoint == 'disclaimer' %} class="bg-dark text-white"{% endif %}>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+                <i data-feather="trending-up" class="me-2"></i>
+                {{ locale.landing_copy.title }}
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <i data-feather="home" class="me-1"></i>{{ locale.navigation.home }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services" onclick="window.GoCortexBrokenBank.scrollToServices()">
+                            <i data-feather="briefcase" class="me-1"></i>{{ locale.navigation.services }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('disclaimer') }}">
+                            <i data-feather="shield" class="me-1"></i>{{ locale.navigation.security }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Promotional Banner -->
+    <div class="alert alert-info alert-dismissible fade show m-0" role="alert" style="background: linear-gradient(135deg, #00cc66 0%, #00ff80 100%); color: #000000; border: none;">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <i data-feather="star" class="me-2"></i>
+                <strong>{{ locale.promotional_banner.new_customer_offer }}</strong> - {{ locale.promotional_banner.offer_text }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" style="filter: brightness(0);"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="fw-bold mb-3">{{ locale.landing_copy.title }}</h6>
+                    <p class="text-muted">{{ locale.landing_copy.subtitle }}</p>
+                    <p class="small">
+                        <i data-feather="phone" class="me-1" style="width: 16px; height: 16px;"></i>
+                        Support: {{ locale.support_phone }}
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold mb-3">{{ locale.footer.banking_services_title }}</h6>
+                    <ul class="list-unstyled text-muted">
+                        <li><i data-feather="check" class="me-1" style="width: 16px; height: 16px;"></i>{{ locale.footer.personal_banking }}</li>
+                        <li><i data-feather="check" class="me-1" style="width: 16px; height: 16px;"></i>{{ locale.footer.business_accounts }}</li>
+                        <li><i data-feather="check" class="me-1" style="width: 16px; height: 16px;"></i>{{ locale.footer.investment_services }}</li>
+                        <li><i data-feather="check" class="me-1" style="width: 16px; height: 16px;"></i>{{ locale.footer.digital_banking }}</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">&copy; 2025 {{ locale.landing_copy.title }}. {{ locale.footer.copyright_prefix }} v{{ app_version }}</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge bg-warning text-dark">{{ locale.country_code }}</span>
+                    <span class="badge bg-info">{{ locale.date_format }}</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="{{ url_for('static', filename='vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- Initialize Feather Icons -->
+    <script>feather.replace()</script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>

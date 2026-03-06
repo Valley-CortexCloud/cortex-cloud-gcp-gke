@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ locale.pages.digital.title }} - {{ locale.landing_copy.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 fw-bold mb-3">
+                <i data-feather="shield-off" class="me-3 text-primary"></i>
+                {{ locale.pages.digital.title }}
+            </h1>
+            <p class="lead text-muted">{{ locale.pages.digital.subtitle }}</p>
+            <p class="text-muted">{{ locale.pages.digital.description }}</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for card in locale.pages.digital.cards %}
+        <div class="col-md-6 col-lg-6">
+            <div class="glass-card p-5 h-100" style="border: 2px solid rgba(0, 204, 102, 0.3);">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="lock" class="text-success me-3" style="width: 32px; height: 32px;"></i>
+                    <h4 class="mb-0 fw-bold">{{ card.title }}</h4>
+                </div>
+                <p class="text-muted mb-4">{{ card.description }}</p>
+                <button class="btn btn-outline-success btn-lg w-100">
+                    <i data-feather="check" class="me-2"></i>
+                    {{ locale.buttons[card.button_key] }}
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="glass-card p-5 text-center bg-dark text-white">
+                <h5 class="fw-bold mb-3">
+                    <i data-feather="eye-off" class="me-2"></i>
+                    Maximum Privacy Guaranteed
+                </h5>
+                <p class="mb-0">All transactions are completely anonymous. No KYC, no AML, no questions asked. Your privacy is our priority.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

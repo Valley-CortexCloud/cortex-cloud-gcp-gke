@@ -1,0 +1,305 @@
+/* Modern Banking Theme - Dark with Green Accents */
+
+/* Global Overrides */
+body {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Navigation */
+.navbar {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%) !important;
+    border-bottom: 1px solid #00cc66;
+    backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+    color: #00cc66 !important;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    color: #ffffff !important;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #00cc66 !important;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, rgba(0, 204, 102, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero-content h1 {
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(0, 204, 102, 0.3);
+}
+
+.hero-content .text-primary {
+    color: #00cc66 !important;
+}
+
+/* Dashboard Cards */
+.security-dashboard {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%) !important;
+    border: 1px solid #333333;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 204, 102, 0.1);
+}
+
+.stat-card {
+    border-radius: 12px;
+    border: 1px solid #333333;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 0%, rgba(0, 204, 102, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: #00cc66;
+    box-shadow: 0 4px 20px rgba(0, 204, 102, 0.2);
+}
+
+/* Cards */
+.card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%) !important;
+    border: 1px solid #333333 !important;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    border-color: #00cc66 !important;
+    box-shadow: 0 8px 32px rgba(0, 204, 102, 0.15) !important;
+    transform: translateY(-4px);
+}
+
+.card-title {
+    color: #ffffff !important;
+}
+
+.card-text {
+    color: #cccccc !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background: linear-gradient(135deg, #00cc66 0%, #00ff80 100%) !important;
+    border: none !important;
+    color: #000000 !important;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #00ff80 0%, #00cc66 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 204, 102, 0.4);
+    color: #000000 !important;
+}
+
+.btn-outline-primary {
+    border: 2px solid #00cc66 !important;
+    color: #00cc66 !important;
+    background: transparent !important;
+}
+
+.btn-outline-primary:hover {
+    background: #00cc66 !important;
+    color: #000000 !important;
+    box-shadow: 0 4px 15px rgba(0, 204, 102, 0.3);
+}
+
+.btn-secondary, .btn-outline-secondary {
+    background: linear-gradient(135deg, #333333 0%, #1a1a1a 100%) !important;
+    border: 1px solid #555555 !important;
+    color: #ffffff !important;
+}
+
+.btn-secondary:hover, .btn-outline-secondary:hover {
+    background: linear-gradient(135deg, #555555 0%, #333333 100%) !important;
+    border-color: #00cc66 !important;
+    color: #ffffff !important;
+}
+
+/* Badges */
+.badge {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.bg-danger {
+    background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%) !important;
+}
+
+.bg-warning {
+    background: linear-gradient(135deg, #ffcc00 0%, #ff9900 100%) !important;
+    color: #000000 !important;
+}
+
+.bg-info {
+    background: linear-gradient(135deg, #00cc66 0%, #00ff80 100%) !important;
+    color: #000000 !important;
+}
+
+.bg-success {
+    background: linear-gradient(135deg, #00cc66 0%, #00ff80 100%) !important;
+    color: #000000 !important;
+}
+
+/* Alert Banner */
+.alert-danger {
+    background: linear-gradient(135deg, #1a0000 0%, #330000 100%) !important;
+    border: 1px solid #cc0000 !important;
+    color: #ffffff !important;
+}
+
+/* Sections */
+.features-section {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+}
+
+.vulnerability-showcase {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+}
+
+.cta-section {
+    background: linear-gradient(135deg, #00cc66 0%, #00ff80 100%) !important;
+    color: #000000 !important;
+}
+
+.cta-section h2 {
+    color: #000000 !important;
+}
+
+.cta-section p {
+    color: #333333 !important;
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%) !important;
+    border-top: 1px solid #333333;
+}
+
+/* Feature Cards */
+.feature-card {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%) !important;
+    border: 1px solid #333333 !important;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    border-color: #00cc66 !important;
+    box-shadow: 0 6px 25px rgba(0, 204, 102, 0.15) !important;
+}
+
+.feature-icon {
+    color: #00cc66 !important;
+}
+
+/* Text Colors */
+.text-primary {
+    color: #00cc66 !important;
+}
+
+.text-muted {
+    color: #888888 !important;
+}
+
+.lead {
+    color: #cccccc !important;
+}
+
+/* Custom Banking Elements */
+.banking-gradient {
+    background: linear-gradient(135deg, #00cc66 0%, #00ff80 50%, #00cc66 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glow-effect {
+    text-shadow: 0 0 10px rgba(0, 204, 102, 0.5);
+}
+
+/* Modern Glassmorphism Effect */
+.glass-card {
+    background: rgba(26, 26, 26, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 204, 102, 0.2);
+    border-radius: 16px;
+}
+
+/* Hover Lift Effect for Banking Service Cards */
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 204, 102, 0.25) !important;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #00cc66 0%, #00ff80 100%);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #00ff80 0%, #00cc66 100%);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}

@@ -1,0 +1,41 @@
+name: Install Connector - Push to Path
+on: 
+  push: 
+    branches: 
+      - main
+    paths: 
+      - 'installs/connector/**'
+
+jobs:
+  install-connector:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth with static SA key
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: gcloud is ready
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Return GKE cluster name
+        id: gke-cluster
+        run: |
+          set -euo pipefail
+          CLUSTER_NAME=$(gcloud container clusters list --filter="name:*" --format="value(name)")
+          echo "cluster_name=$CLUSTER_NAME" >> "$GITHUB_OUTPUT"         
+
+      - name: Get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v3'
+        with:
+          cluster_name: ${{ steps.gke-cluster.outputs.cluster_name }}
+          location: 'us-central1'        
+
+      - name: Install connector
+        working-directory: installs/connector
+        run: |
+          VALUES_FILE=$(ls *.yaml)
+          helm repo add cortex https://paloaltonetworks.github.io/cortex-cloud --force-update
+          helm upgrade --install konnector cortex/konnector --wait-for-jobs --create-namespace --namespace panw --values "$VALUES_FILE" --set optionalValues.CLUSTER_URI="https://container.googleapis.com/v1/projects/${{ vars.GCP_PROJECT_ID }}/locations/us-central1/clusters/${{ steps.gke-cluster.outputs.cluster_name }}"

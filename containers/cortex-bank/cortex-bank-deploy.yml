@@ -1,0 +1,84 @@
+# 1. SECRET - Stores sensitive data
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gocortex-secrets
+type: Opaque
+stringData:
+  session-secret: "hardcoded-docker-secret-key"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gocortex-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gocortex-broken-bank
+  labels:
+    app: gocortex-broken-bank
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gocortex-broken-bank
+  template:
+    metadata:
+      labels:
+        app: gocortex-broken-bank
+    spec:
+      containers:
+      - name: "${CONTAINER_NAME}"
+        image: "${CONTAINER_IMAGE}"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8888
+          name: flask-ui
+        - containerPort: 8080
+          name: tomcat-exploit
+        env:
+        - name: FLASK_ENV
+          value: "production"
+        - name: DATABASE_URL
+          value: "sqlite:///app/instance/gocortexbrokenbank.db"
+        - name: SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: gocortex-secrets
+              key: session-secret
+        volumeMounts:
+        - name: db-storage
+          mountPath: /app/instance
+      volumes:
+      - name: db-storage
+        persistentVolumeClaim:
+          claimName: gocortex-db-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gocortex-service
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: gocortex-broken-bank
+  ports:
+    - name: flask-ui
+      protocol: TCP
+      port: 8888
+      targetPort: 8888
+    - name: tomcat-exploit
+      protocol: TCP
+      port: 9999
+      targetPort: 8080

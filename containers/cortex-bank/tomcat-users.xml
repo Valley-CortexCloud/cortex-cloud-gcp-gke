@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Intentionally vulnerable Tomcat users configuration
+  Weak credentials for manager application access
+-->
+<tomcat-users xmlns="http://tomcat.apache.org/xml"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd"
+              version="1.0">
+    
+    <!-- Weak administrator credentials (intentional vulnerability) -->
+    <role rolename="manager-gui"/>
+    <role rolename="manager-script"/>
+    <role rolename="manager-jmx"/>
+    <role rolename="manager-status"/>
+    <role rolename="admin-gui"/>
+    <role rolename="admin-script"/>
+    
+    <!-- Intentionally weak credentials for security testing -->
+    <user username="admin" password="admin" roles="manager-gui,manager-script,manager-jmx,manager-status,admin-gui,admin-script"/>
+    <user username="tomcat" password="tomcat" roles="manager-gui,manager-script"/>
+    <user username="manager" password="manager" roles="manager-gui,manager-script,manager-jmx,manager-status"/>
+    <user username="root" password="root" roles="manager-gui,manager-script,manager-jmx,manager-status,admin-gui,admin-script"/>
+    <user username="test" password="test" roles="manager-gui"/>
+    <user username="deployer" password="deployer123" roles="manager-script"/>
+    
+    <!-- Common weak credentials for brute force testing -->
+    <user username="guest" password="guest" roles="manager-gui"/>
+    <user username="user" password="password" roles="manager-gui"/>
+    <user username="administrator" password="password123" roles="manager-gui,admin-gui"/>
+</tomcat-users>

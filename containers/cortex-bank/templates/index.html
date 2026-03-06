@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block title %}{{ locale.landing_copy.title }} - {{ locale.landing_copy.subtitle }}{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i data-feather="trending-up" class="me-3 text-primary"></i>
+                        <span class="banking-gradient">{{ locale.landing_copy.title }}</span>
+                        <small class="text-muted d-block mt-2">Version {{ app_version }}</small>
+                    </h1>
+                    <p class="lead text-muted mb-4">{{ locale.landing_copy.welcome_message }}</p>
+                    <p class="mb-4">{{ locale.landing_copy.description }}</p>
+                    
+                    <div class="d-flex gap-3 mb-4">
+                        <button class="btn btn-primary btn-lg" onclick="window.GoCortexBrokenBank.scrollToServices()">
+                            <i data-feather="arrow-down" class="me-2"></i>
+                            {{ locale.buttons.explore_services }}
+                        </button>
+                        <a href="{{ url_for('disclaimer') }}" class="btn btn-outline-secondary btn-lg">
+                            <i data-feather="shield" class="me-2"></i>
+                            {{ locale.buttons.security_info }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="security-dashboard p-4 glass-card">
+                    <h5 class="fw-bold mb-4">
+                        <i data-feather="trending-up" class="me-2 text-primary"></i>
+                        {{ locale.dashboard.account_overview }}
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="stat-card text-center p-3 bg-success text-dark rounded">
+                                <i data-feather="dollar-sign" class="mb-2"></i>
+                                <div class="fw-bold">$24,567</div>
+                                <small>{{ locale.dashboard.total_balance }}</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card text-center p-3 bg-info text-dark rounded">
+                                <i data-feather="credit-card" class="mb-2"></i>
+                                <div class="fw-bold">3</div>
+                                <small>{{ locale.dashboard.active_cards }}</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card text-center p-3 bg-warning text-dark rounded">
+                                <i data-feather="trending-up" class="mb-2"></i>
+                                <div class="fw-bold">+12.5%</div>
+                                <small>{{ locale.dashboard.monthly_growth }}</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="stat-card text-center p-3 glass-card text-white rounded">
+                                <i data-feather="award" class="mb-2"></i>
+                                <div class="fw-bold">Gold</div>
+                                <small>{{ locale.dashboard.member_status }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="features-section py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="fw-bold glow-effect">{{ locale.sections.banking_features_title }}</h2>
+                <p class="lead text-muted">{{ locale.sections.banking_features_description }}</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for feature in locale.landing_copy.features %}
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card h-100 p-4 bg-white rounded shadow-sm">
+                    <div class="feature-icon text-primary mb-3">
+                        <i data-feather="check-circle"></i>
+                    </div>
+                    <p class="mb-0">{{ feature }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="vulnerability-showcase py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5" id="services">
+                <h2 class="fw-bold glow-effect">{{ locale.sections.our_services_title }}</h2>
+                <p class="lead text-muted">{{ locale.sections.our_services_description }}</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <a href="{{ url_for('netbank') }}" class="text-decoration-none">
+                    <div class="banking-service-card h-100">
+                        <div class="card border-0 shadow-sm glass-card hover-lift">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i data-feather="user" class="text-primary me-2"></i>
+                                    <h5 class="card-title mb-0">Personal Banking</h5>
+                                </div>
+                                <p class="card-text text-muted mb-3">Access your personal netbank account dashboard and transaction history</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success">Available</span>
+                                    <i data-feather="arrow-right" class="text-primary"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <a href="{{ url_for('business') }}" class="text-decoration-none">
+                    <div class="banking-service-card h-100">
+                        <div class="card border-0 shadow-sm glass-card hover-lift">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i data-feather="briefcase" class="text-primary me-2"></i>
+                                    <h5 class="card-title mb-0">Business Banking</h5>
+                                </div>
+                                <p class="card-text text-muted mb-3">Offshore banking services and corporate financial solutions</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success">Available</span>
+                                    <i data-feather="arrow-right" class="text-primary"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <a href="{{ url_for('investments') }}" class="text-decoration-none">
+                    <div class="banking-service-card h-100">
+                        <div class="card border-0 shadow-sm glass-card hover-lift">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i data-feather="trending-up" class="text-warning me-2"></i>
+                                    <h5 class="card-title mb-0">Investment Services</h5>
+                                </div>
+                                <p class="card-text text-muted mb-3">Exclusive investment opportunities with guaranteed returns</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-warning text-dark">HOT</span>
+                                    <i data-feather="arrow-right" class="text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-6 col-lg-3">
+                <a href="{{ url_for('digital') }}" class="text-decoration-none">
+                    <div class="banking-service-card h-100">
+                        <div class="card border-0 shadow-sm glass-card hover-lift">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <i data-feather="smartphone" class="text-success me-2"></i>
+                                    <h5 class="card-title mb-0">Digital Services</h5>
+                                </div>
+                                <p class="card-text text-muted mb-3">Anonymous digital banking and cryptocurrency services</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-success">Available</span>
+                                    <i data-feather="arrow-right" class="text-success"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg">
+                    <i data-feather="user-plus" class="me-2"></i>
+                    Open New Account - No Verification Required
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="exploit-section py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <button class="btn btn-outline-danger btn-lg" type="button" data-bs-toggle="collapse" data-bs-target="#exploitContent" aria-expanded="false" aria-controls="exploitContent">
+                    <i data-feather="alert-triangle" class="me-2"></i>
+                    Show Advanced Security Testing Endpoints
+                    <i data-feather="chevron-down" class="ms-2"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="collapse" id="exploitContent">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="fw-bold text-danger">{{ locale.exploit_section.title }}</h2>
+                    <p class="lead">{{ locale.exploit_section.description }}</p>
+                    <p class="text-warning"><small>{{ locale.exploit_section.warning }}</small></p>
+                </div>
+            </div>
+        
+        <div class="row g-4 mb-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="card bg-dark border-danger">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger"><i data-feather="upload-cloud" class="me-2"></i>{{ locale.exploit_section.file_upload.title }}</h5>
+                        <p class="card-text text-white-50">{{ locale.exploit_section.file_upload.description }}</p>
+                        <a href="#" class="tomcat-link btn btn-outline-danger btn-sm" data-path="/exploit-app/upload" target="_blank">{{ locale.exploit_section.file_upload.button_text }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card bg-dark border-danger">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger"><i data-feather="terminal" class="me-2"></i>{{ locale.exploit_section.command_execution.title }}</h5>
+                        <p class="card-text text-white-50">{{ locale.exploit_section.command_execution.description }}</p>
+                        <a href="#" class="tomcat-link btn btn-outline-danger btn-sm" data-path="/exploit-app/execute" target="_blank">{{ locale.exploit_section.command_execution.button_text }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card bg-dark border-danger">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger"><i data-feather="radio" class="me-2"></i>{{ locale.exploit_section.network_ping.title }}</h5>
+                        <p class="card-text text-white-50">{{ locale.exploit_section.network_ping.description }}</p>
+                        <a href="#" class="tomcat-link btn btn-outline-danger btn-sm" data-path="/exploit-app/ping" target="_blank">{{ locale.exploit_section.network_ping.button_text }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card bg-dark border-danger">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger"><i data-feather="package" class="me-2"></i>{{ locale.exploit_section.dynamic_class_loading.title }}</h5>
+                        <p class="card-text text-white-50">{{ locale.exploit_section.dynamic_class_loading.description }}</p>
+                        <a href="#" class="tomcat-link btn btn-outline-danger btn-sm" data-path="/exploit-app/dynamic" target="_blank">{{ locale.exploit_section.dynamic_class_loading.button_text }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card bg-dark border-danger">
+                    <div class="card-body">
+                        <h5 class="card-title text-danger"><i data-feather="code" class="me-2"></i>{{ locale.exploit_section.code_evaluation.title }}</h5>
+                        <p class="card-text text-white-50">{{ locale.exploit_section.code_evaluation.description }}</p>
+                        <a href="#" class="tomcat-link btn btn-outline-danger btn-sm" data-path="/exploit-app/eval" target="_blank">{{ locale.exploit_section.code_evaluation.button_text }}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="card bg-dark border-warning">
+                    <div class="card-body">
+                        <h5 class="card-title text-warning"><i data-feather="alert-triangle" class="me-2"></i>{{ locale.exploit_section.spring4shell.title }}</h5>
+                        <p class="card-text text-white-50">{{ locale.exploit_section.spring4shell.description }}</p>
+                        <a href="#" class="tomcat-link btn btn-outline-warning btn-sm" data-path="/exploit-app/spring4shell" target="_blank">{{ locale.exploit_section.spring4shell.button_text }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <p class="mb-3"><strong>{{ locale.exploit_section.tomcat_server_label }}</strong> <code id="tomcat-server-url">http://localhost:9999</code></p>
+            <a href="#" id="tomcat-dashboard-link" class="btn btn-danger btn-lg" target="_blank">
+                <i data-feather="external-link" class="me-2"></i>
+                {{ locale.exploit_section.open_dashboard_button }}
+            </a>
+        </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Dynamically generate Tomcat URLs based on current hostname
+// This ensures links work whether accessed via localhost, IP address, or domain name
+(function() {
+    const tomcatBaseUrl = window.location.protocol + '//' + window.location.hostname + ':9999';
+    
+    // Update all Tomcat exploit links
+    document.querySelectorAll('.tomcat-link').forEach(function(link) {
+        const path = link.getAttribute('data-path');
+        link.href = tomcatBaseUrl + path;
+    });
+    
+    // Update Tomcat server URL display
+    const serverUrlElement = document.getElementById('tomcat-server-url');
+    if (serverUrlElement) {
+        serverUrlElement.textContent = tomcatBaseUrl;
+    }
+    
+    // Update dashboard link
+    const dashboardLink = document.getElementById('tomcat-dashboard-link');
+    if (dashboardLink) {
+        dashboardLink.href = tomcatBaseUrl + '/exploit-app/';
+    }
+})();
+</script>
+
+<div class="cta-section py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-3">{{ locale.cta.title }}</h2>
+        <p class="lead mb-4">{{ locale.cta.description }}</p>
+        <div class="d-flex justify-content-center gap-3">
+            <button class="btn btn-dark btn-lg">
+                <i data-feather="user-plus" class="me-2"></i>
+                {{ locale.buttons.open_account }}
+            </button>
+            <a href="{{ url_for('disclaimer') }}" class="btn btn-outline-dark btn-lg">
+                <i data-feather="shield" class="me-2"></i>
+                {{ locale.buttons.security_info }}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

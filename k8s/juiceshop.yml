@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: owasp-juice
+  namespace: default
+  labels:
+    app: juice-shop
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: juice-shop
+  template:
+    metadata:
+      labels:
+        app: juice-shop
+    spec:
+      containers:
+      - name: juice
+        image: bkimminich/juice-shop
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: "100m" # 0.1 core
+            memory: "128Mi"
+          limits:
+            cpu: "500m" # 0.5 core
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: juice-shop-svc
+  namespace: default
+spec:
+  selector:
+    app: juice-shop
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: juice-shop-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: juice-shop-svc
+            port:
+              number: 80
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: juiceshop-hpa
+  namespace: default
+  labels:
+    app: juice-shop
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: owasp-juice
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80

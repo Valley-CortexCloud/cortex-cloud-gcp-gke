@@ -1,0 +1,315 @@
+name: 3 - Onboard Cortex Cloud
+on: workflow_dispatch
+
+jobs:
+  cortex-onboard:
+    permissions:
+      id-token: write
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth with static SA key
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Check for existing onboarded instance
+        working-directory: installs/onboard
+        id: check-instance
+        env:
+          CORTEX_URL: ${{ vars.CORTEX_URL }}
+          API_KEY_ID: ${{ vars.CORTEX_API_ID }}
+          API_KEY_SECRET: ${{ secrets.CORTEX_API_SECRET }}
+        run: |
+
+          export CORTEX_URL="${{ vars.CORTEX_URL }}"
+          export API_KEY_ID="${{ vars.CORTEX_API_ID }}"
+          export API_KEY_SECRET="${{ secrets.CORTEX_API_SECRET }}"
+        
+          check_instance=$(curl -X POST "https://api-$CORTEX_URL/public_api/v1/cloud_onboarding/get_instances" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: $API_KEY_SECRET" \
+              -H "x-xdr-auth-id: $API_KEY_ID" \
+              -d @- << EOF
+              {
+                "request_data" : {
+                  "filter_data" : {
+                    "sort" : [ {
+                      "FIELD" : "STATUS",
+                      "ORDER" : "DESC"
+                    } ],
+                    "paging" : {
+                      "from" : 0,
+                      "to" : 50
+                    },
+                    "filter" : {
+                      "AND" : [ {
+                        "SEARCH_FIELD" : "INSTANCE_NAME",
+                        "SEARCH_TYPE" : "EQ",
+                        "SEARCH_VALUE" : "GCP-${{ vars.GCP_PROJECT_ID }}"
+                      }
+                      ]
+                    }
+                  }
+                }
+              }
+          EOF
+            )
+
+            instance_exists=$(echo "$check_instance" | jq -r '.reply.DATA')
+
+            if [ -z "$instance_exists" ] || [ "$instance_exists" == "null" ] || [ "$instance_exists" == "[]" ]; then
+              echo "Instance not detected."
+              echo "instance_onboarded=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            
+            echo "----------------------------------------------"
+            echo "Instance already onboarded."
+            echo "----------------------------------------------"
+
+            echo "instance_onboarded=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create Cortex Cloud Terraform deployment file
+        working-directory: installs/onboard
+        if: steps.check-instance.outputs.instance_onboarded == 'false'
+        env:
+          CORTEX_URL: ${{ vars.CORTEX_URL }}
+          API_KEY_ID: ${{ vars.CORTEX_API_ID }}
+          API_KEY_SECRET: ${{ secrets.CORTEX_API_SECRET }}
+        run: |
+
+          export CORTEX_URL="${{ vars.CORTEX_URL }}"
+          export API_KEY_ID="${{ vars.CORTEX_API_ID }}"
+          export API_KEY_SECRET="${{ secrets.CORTEX_API_SECRET }}"
+        
+          template_response=$(curl -X POST "https://api-$CORTEX_URL/public_api/v1/cloud_onboarding/create_instance_template" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: $API_KEY_SECRET" \
+              -H "x-xdr-auth-id: $API_KEY_ID" \
+              -d @- << EOF
+              {
+                "request_data": {
+                  "scope": "ACCOUNT",
+                  "scan_mode": "MANAGED",
+                  "scope_modifications": {
+                      "regions": {
+                          "enabled": false
+                      }
+                  },
+                  "additional_capabilities": {
+                      "xsiam_analytics": true,
+                      "data_security_posture_management": true,
+                      "registry_scanning": true,
+                      "serverless_scanning": true,
+                      "agentless_disk_scanning": true,
+                      "registry_scanning_options": {
+                          "type": "ALL"
+                      }
+                  },
+                  "custom_resources_tags": [
+                      {
+                          "key": "managed_by",
+                          "value": "paloaltonetworks"
+                      }
+                  ],
+                  "collection_configuration": {
+                      "audit_logs": {
+                          "enabled": true
+                      }
+                  },
+                  "cloud_provider": "GCP"
+                }
+              }
+          EOF
+            )
+
+            template_file_url=$(echo "$template_response" | jq -r '.reply.manual.TF')
+
+            if [ -z "$template_file_url" ] || [ "$template_file_url" == "null" ] || [ "$template_file_url" == "[]" ]; then
+              echo "::error::Failed to get template_file_url from response."
+              echo "API Response: $template_response"
+              exit 1
+            fi
+            
+            echo "----------------------------------------------"
+            echo "Successfully retrieved template URL. Downloading..."
+            echo "----------------------------------------------"
+            curl -H "Authorization: $API_KEY_SECRET" -H "x-xdr-auth-id: $API_KEY_ID" "$template_file_url" -o onboard.tar.gz
+            
+      - name: Check template version and create GitHub Release
+        working-directory: installs/onboard
+        if: steps.check-instance.outputs.instance_onboarded == 'false'
+        id: create_release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tar -xvzf onboard.tar.gz 
+          RAW_VERSIONS=$(awk '/template_version = \{/,/\}/' template_params.tfvars)
+          CONFIG_HASH=$(echo "$RAW_VERSIONS" | sha256sum | cut -c 1-8)
+          RELEASE_NOTES=$(echo "$RAW_VERSIONS" | grep -v "template_version" | grep -v "}" | sed -E 's/^[[:space:]]*"([^"]+)"[[:space:]]*=[[:space:]]*"([^"]+)"/- **\1**: \2/')
+          TAG_NAME="CortexOnboard-${{ vars.GCP_PROJECT_ID }}-${CONFIG_HASH}"
+          RELEASE_TITLE="Cortex TF Onboard: ${{ vars.GCP_PROJECT_ID }} (Config: ${CONFIG_HASH})"
+
+          echo "release_tag=$TAG_NAME" >> "$GITHUB_OUTPUT"
+
+          if gh release view "$TAG_NAME" > /dev/null 2>&1; then
+            echo "----------------------------------------------"
+            echo "Release $TAG_NAME already exists. Skipping creation."
+            echo "----------------------------------------------"
+            exit 0
+          fi
+
+          gh release create "$TAG_NAME" \
+            --title "$RELEASE_TITLE" \
+            --notes "### Configuration Versions
+          $RELEASE_NOTES
+          
+          _Generated from template_params.tfvars_"
+
+          gh release upload "$TAG_NAME" onboard.tar.gz --clobber
+
+      - name: Return TF state bucket
+        if: steps.check-instance.outputs.instance_onboarded == 'false'
+        id: state-bucket
+        run: |
+          set -euo pipefail
+          BUCKET=$(gcloud storage buckets list --filter="name:terraform-state" --format="value(name)")
+          echo "bucket=$BUCKET" >> "$GITHUB_OUTPUT"
+
+      - name: Download onboard artifact and initiatlize TF
+        if: steps.check-instance.outputs.instance_onboarded == 'false'
+        working-directory: installs/onboard
+        env:
+          TF_BUCKET: ${{ steps.state-bucket.outputs.bucket }}
+          TARGET_TAG: ${{ steps.create_release.outputs.release_tag }}
+          STATE_PATH: "cortex-onboard"
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "${TARGET_TAG}" -p 'onboard.tar.gz' --clobber
+          tar -xvzf onboard.tar.gz 
+          terraform init -reconfigure -backend-config="bucket=${TF_BUCKET}" -backend-config="prefix=${STATE_PATH}"
+
+      - name: Terraform apply
+        working-directory: installs/onboard
+        if: steps.check-instance.outputs.instance_onboarded == 'false'
+        run: terraform apply -auto-approve --var=project_id=${{ vars.GCP_PROJECT_ID }} --var=connector_id="PAN-GCP-${{ vars.GCP_PROJECT_ID }}" -var-file="template_params.tfvars"
+
+      - name: Check for Asset Group
+        id: group-check
+        env:
+          CORTEX_URL: ${{ vars.CORTEX_URL }}
+          API_KEY_ID: ${{ vars.CORTEX_API_ID }}
+          API_KEY_SECRET: ${{ secrets.CORTEX_API_SECRET }}
+        run: |
+
+          export CORTEX_URL="${{ vars.CORTEX_URL }}"
+          export API_KEY_ID="${{ vars.CORTEX_API_ID }}"
+          export API_KEY_SECRET="${{ secrets.CORTEX_API_SECRET }}"
+        
+          asset_group_check=$(curl -X POST "https://api-$CORTEX_URL/public_api/v1/asset-groups" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: $API_KEY_SECRET" \
+              -H "x-xdr-auth-id: $API_KEY_ID" \
+              -d @- << EOF
+              {
+                  "request_data":
+                  {
+                    "filters": {
+                        "AND": [
+                        {
+                            "SEARCH_FIELD": "XDM.ASSET_GROUP.NAME",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "PAN-GCP-Lab-${{ vars.GCP_PROJECT_ID }}"
+                        }
+                        ]
+                    },
+                    "sort": [
+                        {
+                        "FIELD": "XDM.ASSET_GROUP.LAST_UPDATE_TIME",
+                        "ORDER": "DESC"
+                        }
+                    ],
+                    "search_from": 0,
+                    "search_to": 1000
+                  }
+              }
+          EOF
+            )
+          
+          group_id=$(echo $asset_group_check | jq -r '.reply.data[0]."XDM.ASSET_GROUP.ID"')  
+
+          echo "create_asset_group=false" >> "$GITHUB_OUTPUT"
+
+          if [ -z "$group_id" ] || [ "$group_id" == "null" ] || [ "$group_id" == "[]" ]; then
+            echo "----------------------------------------------"
+            echo "Asset Group does not exist."
+            echo "----------------------------------------------"
+            echo "create_asset_group=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "----------------------------------------------"
+          echo "Asset group already exists with id: $group_id"
+          echo "----------------------------------------------"
+
+      - name: Create Asset Group
+        if: steps.group-check.outputs.create_asset_group == 'true'
+        env:
+          CORTEX_URL: ${{ vars.CORTEX_URL }}
+          API_KEY_ID: ${{ vars.CORTEX_API_ID }}
+          API_KEY_SECRET: ${{ secrets.CORTEX_API_SECRET }}
+        run: |
+
+          export CORTEX_URL="${{ vars.CORTEX_URL }}"
+          export API_KEY_ID="${{ vars.CORTEX_API_ID }}"
+          export API_KEY_SECRET="${{ secrets.CORTEX_API_SECRET }}"
+
+          FULL_NAME="${{ github.repository }}"
+          REPO_NAME="${FULL_NAME#*/}"
+          CORTEX_REPO_NAME="GITHUB-${REPO_NAME}"
+        
+          asset_group=$(curl -X POST "https://api-$CORTEX_URL/public_api/v1/asset-groups/create" \
+              -H "Content-Type: application/json" \
+              -H "Authorization: $API_KEY_SECRET" \
+              -H "x-xdr-auth-id: $API_KEY_ID" \
+              -d @- << EOF
+              {
+                  "request_data":
+                  {
+                      "asset_group": {
+                          "group_name": "PAN-GCP-Lab-${{ vars.GCP_PROJECT_ID }}",
+                          "group_type": "Dynamic",
+                          "group_description": "Lab GCP account provided by PAN for POV data.",
+                          "membership_predicate": {
+                          "AND": [
+                            {
+                              "OR": [
+                                {
+                                  "SEARCH_FIELD": "xdm.asset.realm",
+                                  "SEARCH_TYPE": "EQ",
+                                  "SEARCH_VALUE": "${{ vars.GCP_PROJECT_ID }}"
+                                },
+                                {
+                                  "SEARCH_FIELD": "xdm.asset.realm",
+                                  "SEARCH_TYPE": "EQ",
+                                  "SEARCH_VALUE": "${CORTEX_REPO_NAME}"
+                                }
+                              ]
+                            }
+                          ]
+                          }
+                      }
+                  }
+              }
+          EOF
+            )
+
+      - name: Create Vulnerability Policy
+        shell: pwsh
+        working-directory: scripts/
+        run: ./create-vuln-policy -apiId ${{ vars.CORTEX_API_ID }} -apiKey ${{ secrets.CORTEX_API_SECRET }} -baseURL ${{ vars.CORTEX_URL }}

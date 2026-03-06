@@ -1,0 +1,73 @@
+name: 5 - Create Security Cases
+on: workflow_dispatch
+
+jobs:
+  attack-k8s:
+    runs-on: ubuntu-latest
+    outputs:
+      compute_matrix: ${{ steps.list-instances.outputs.matrix}}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth with static SA key
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: gcloud is ready
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Return GKE cluster name
+        id: gke-cluster
+        run: |
+          set -euo pipefail
+          CLUSTER_NAME=$(gcloud container clusters list --filter="name:*" --format="value(name)")
+          echo "cluster_name=$CLUSTER_NAME" >> "$GITHUB_OUTPUT"           
+
+      - name: Get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v3'
+        with:
+          cluster_name: ${{ steps.gke-cluster.outputs.cluster_name }}
+          location: 'us-central1'
+      
+      - name: Push malicious k8s deployment
+        working-directory: scripts/
+        run: |
+          kubectl apply -f cdr.yml
+
+      - name: Remove malicious k8s deployment
+        working-directory: scripts/
+        run: |
+          sleep 90
+          kubectl delete -f cdr.yml           
+
+      - name: List compute instances
+        id: list-instances
+        continue-on-error: false
+        run: |
+          compute_instances=$(gcloud compute instances list --format="json" | jq -c '[.[] | select(.labels["goog-gke-node"] == null) | .name]')
+          echo "matrix=$compute_instances" >> $GITHUB_OUTPUT        
+
+
+  attack-linux:
+    runs-on: ubuntu-latest
+    needs: attack-k8s
+    strategy:
+      fail-fast: true
+      matrix:
+        instances: ${{ fromJson(needs.attack-k8s.outputs.compute_matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth with static SA key
+        uses: google-github-actions/auth@v3
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: gcloud is ready
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Run attack simulation on instance ${{ matrix.instances }}
+        continue-on-error: true
+        run: |
+          gcloud compute ssh ${{ matrix.instances }} --zone=us-central1-a --command="curl -L https://go.dev/dl/go1.25.3.linux-amd64.tar.gz -o go.tar.gz && sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go.tar.gz && export PATH=$PATH:/usr/local/go/bin && sudo rm -rf ttp-bench/ && git clone https://github.com/tstromberg/ttp-bench.git && cd ttp-bench && go run . --all" --quiet

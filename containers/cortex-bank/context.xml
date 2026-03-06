@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Intentionally vulnerable Tomcat context configuration
+  Weak security settings for comprehensive testing
+-->
+<Context>
+    <!-- VULNERABLE: Disable session persistence to enable CVE-2020-9484 testing -->
+    <!-- Session files can be manipulated for RCE exploitation -->
+    <Manager className="org.apache.catalina.session.PersistentManager">
+        <Store className="org.apache.catalina.session.FileStore"/>
+    </Manager>
+    
+    <!-- VULNERABLE: Allow all resource caching (information disclosure) -->
+    <Resources cachingAllowed="true" cacheMaxSize="100000" />
+    
+    <!-- VULNERABLE: Disable HTTP response header security -->
+    <Valve className="org.apache.catalina.valves.ErrorReportValve"
+           showReport="true"
+           showServerInfo="true"/>
+    
+    <!-- VULNERABLE: Enable directory listings -->
+    <Parameter name="listings" value="true" override="false"/>
+    
+    <!-- VULNERABLE: Weak session cookie settings -->
+    <CookieProcessor className="org.apache.tomcat.util.http.Rfc6265CookieProcessor"
+                     sameSiteCookies="none"/>
+</Context>

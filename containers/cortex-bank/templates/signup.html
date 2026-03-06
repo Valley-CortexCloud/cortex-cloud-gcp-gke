@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}{{ locale.pages.signup.title }} - {{ locale.landing_copy.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            {% if success %}
+            <div class="glass-card p-5 text-center">
+                <div class="mb-4">
+                    <i data-feather="check-circle" class="text-success" style="width: 64px; height: 64px;"></i>
+                </div>
+                <h2 class="fw-bold mb-3 text-success">{{ locale.pages.signup.success.title }}</h2>
+                <p class="lead text-muted mb-4">{{ locale.pages.signup.success.message }}</p>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="p-3 bg-light rounded">
+                            <strong>{{ locale.pages.signup.success.account_number_prefix }}</strong> {{ account_number }}
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="p-3 bg-light rounded">
+                            <strong>{{ locale.pages.signup.success.sort_code_prefix }}</strong> {{ sort_code }}
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-muted mb-4">{{ locale.pages.signup.success.next_steps }}</p>
+                
+                <a href="{{ url_for('netbank') }}" class="btn btn-primary btn-lg">
+                    <i data-feather="arrow-right" class="me-2"></i>
+                    Access Netbank
+                </a>
+            </div>
+            {% else %}
+            <div class="glass-card p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold mb-2">{{ locale.pages.signup.title }}</h2>
+                    <p class="text-muted">{{ locale.pages.signup.description }}</p>
+                </div>
+                
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">{{ locale.pages.signup.form.full_name_label }}</label>
+                        <input type="text" class="form-control form-control-lg" id="full_name" name="full_name" 
+                               placeholder="{{ locale.pages.signup.form.full_name_placeholder }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">{{ locale.pages.signup.form.email_label }}</label>
+                        <input type="email" class="form-control form-control-lg" id="email" name="email" 
+                               placeholder="{{ locale.pages.signup.form.email_placeholder }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">{{ locale.pages.signup.form.password_label }}</label>
+                        <input type="password" class="form-control form-control-lg" id="password" name="password" 
+                               placeholder="{{ locale.pages.signup.form.password_placeholder }}" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="account_type" class="form-label">{{ locale.pages.signup.form.account_type_label }}</label>
+                        <select class="form-select form-select-lg" id="account_type" name="account_type">
+                            {% for type in locale.pages.signup.form.account_types %}
+                            <option value="{{ type.value }}">{{ type.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i data-feather="user-plus" class="me-2"></i>
+                            {{ locale.buttons[locale.pages.signup.form.submit_button_key] }}
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary btn-lg">
+                            <i data-feather="rotate-ccw" class="me-2"></i>
+                            {{ locale.buttons[locale.pages.signup.form.reset_button_key] }}
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="alert alert-info mt-4" role="alert">
+                    <i data-feather="info" class="me-2"></i>
+                    No verification required. Account created instantly with no identity checks.
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

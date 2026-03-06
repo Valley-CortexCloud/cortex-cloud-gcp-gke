@@ -1,0 +1,44 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "raygun-backend"
+  namespace: "default"
+  labels:
+    app: "raygun-backend"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: "raygun-backend"
+  template:
+    metadata:
+      labels:
+        app: "raygun-backend"
+    spec:
+      containers:
+      - name: "${CONTAINER_NAME}"
+        image: "${CONTAINER_IMAGE}"
+        imagePullPolicy: Always
+---
+apiVersion: "autoscaling/v2"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "raygun-backend-hpa-cujx"
+  namespace: "default"
+  labels:
+    app: "raygun-backend"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "raygun-backend"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      target:
+        type: "Utilization"
+        averageUtilization: 80

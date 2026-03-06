@@ -1,0 +1,17 @@
+# Intentionally minimal .dockerignore for security testing
+# This allows sensitive files to be copied (vulnerability)
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.git/
+.pytest_cache/
+.coverage
+
+# NOTE: We intentionally DON'T ignore:
+# - .env files (to test secret detection)
+# - vulnerable_data/ (contains test secrets)
+# - instance/ (may contain sensitive data)
+# - *.key, *.pem files (to test secret scanning)

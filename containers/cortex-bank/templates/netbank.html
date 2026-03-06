@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ locale.pages.netbank.title }} - {{ locale.landing_copy.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold mb-2">
+                <i data-feather="user" class="me-3 text-primary"></i>
+                {{ locale.pages.netbank.title }}
+            </h1>
+            <p class="lead text-muted">{{ locale.pages.netbank.welcome_message }}</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="dollar-sign" class="text-success me-2"></i>
+                    <h6 class="mb-0">{{ locale.pages.netbank.balance.current_balance_label }}</h6>
+                </div>
+                <h2 class="display-5 fw-bold mb-0">{{ locale.currency_symbol }}{{ "%.2f"|format(balance) }}</h2>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="credit-card" class="text-info me-2"></i>
+                    <h6 class="mb-0">{{ locale.pages.netbank.balance.account_number_label }}</h6>
+                </div>
+                <p class="h4 mb-0">{{ account_number }}</p>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="hash" class="text-warning me-2"></i>
+                    <h6 class="mb-0">{{ locale.pages.netbank.balance.sort_code_label }}</h6>
+                </div>
+                <p class="h4 mb-0">{{ sort_code }}</p>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="check-circle" class="text-primary me-2"></i>
+                    <h6 class="mb-0">{{ locale.pages.netbank.balance.available_funds_label }}</h6>
+                </div>
+                <h4 class="mb-0">{{ locale.currency_symbol }}{{ "%.2f"|format(balance) }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="glass-card p-4">
+                <h3 class="fw-bold mb-4">
+                    <i data-feather="list" class="me-2 text-primary"></i>
+                    {{ locale.pages.netbank.transactions.section_title }}
+                </h3>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                {% for header in locale.pages.netbank.transactions.headers %}
+                                <th>{{ header }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for txn in transactions %}
+                            <tr>
+                                <td>{{ txn.date }}</td>
+                                <td>{{ txn.description }}</td>
+                                <td class="{% if txn.type == 'credit' %}text-success{% else %}text-danger{% endif %}">
+                                    {{ locale.currency_symbol }}{{ "%.2f"|format(txn.amount|abs) }}
+                                    {% if txn.type == 'credit' %}
+                                    <i data-feather="arrow-up-right" class="ms-1" style="width: 16px; height: 16px;"></i>
+                                    {% else %}
+                                    <i data-feather="arrow-down-right" class="ms-1" style="width: 16px; height: 16px;"></i>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold">{{ locale.currency_symbol }}{{ "%.2f"|format(txn.balance) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

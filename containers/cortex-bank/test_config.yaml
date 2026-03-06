@@ -1,0 +1,46 @@
+# GoCortex Broken Bank - Security Testing Configuration
+# WARNING: This file contains test URLs for cybersecurity validation purposes only
+# These are fictitious domains used by automated security scanners to validate threat detection
+
+# Testing URLs for security scanning validation - these domains are entirely fictitious
+# and are utilised solely for validating URL filtering and threat detection capabilities
+test_threat_domains:
+  malware_test:
+    url: "https://urlfiltering.paloaltonetworks.com/test-malware"
+    description: "Official Palo Alto Networks test endpoint for malware filtering validation"
+    category: "malware"
+    
+  command_control_test:
+    url: "c2.sigre.xyz"
+    description: "Simulated command and control domain for security testing purposes"
+    category: "c2"
+    
+  botnet_test:
+    url: "botnet.sigre.xyz"
+    description: "Test botnet domain for automated security scanner validation"
+    category: "botnet"
+    
+  malware_domain_test:
+    url: "malware.sigre.xyz"
+    description: "Malware simulation domain for cybersecurity testing"
+    category: "malware"
+    
+  hacker_simulation_test:
+    url: "hacker.sigre.xyz"
+    description: "Hacker domain simulation for security validation testing"
+    category: "hacking"
+
+# Test categories for security validation
+threat_categories:
+  - malware
+  - c2
+  - botnet
+  - hacking
+  - phishing
+
+# Security testing notice
+disclaimer: |
+  IMPORTANT: All URLs and domains listed in this configuration are fictitious
+  and intended solely for automated security testing. They are not real threats
+  and should only be used in controlled testing environments for validating
+  cybersecurity tools and URL filtering capabilities.

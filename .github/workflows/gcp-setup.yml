@@ -1,0 +1,79 @@
+name: 1 - Prepare GCP Environment
+on: workflow_dispatch
+
+jobs:
+  env-setup:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auth with static SA key
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: gcloud is ready
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Enable GCP API's
+        run: |
+          gcloud services enable \
+            serviceusage.googleapis.com \
+            cloudresourcemanager.googleapis.com \
+            compute.googleapis.com \
+            iam.googleapis.com \
+            container.googleapis.com \
+            containerregistry.googleapis.com \
+            storage.googleapis.com \
+            pubsub.googleapis.com \
+            servicenetworking.googleapis.com \
+            logging.googleapis.com \
+            --project ${{ vars.GCP_PROJECT_ID }}
+          
+          for svc in storage.googleapis.com iam.googleapis.com; do
+            echo "Waiting for $svc to be enabled…"
+            until gcloud services list --enabled --project "${{ vars.GCP_PROJECT_ID }}" \
+              --filter="config.name=$svc" --format="value(config.name)" | grep -q "$svc"; do
+              sleep 5
+            done
+          done
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Create bucket with local state
+        working-directory: terraform/gcp/state-bootstrap
+        run: |
+          set -euo pipefail
+          terraform init -input=false
+          terraform apply -input=false -auto-approve \
+            -var project_id=${{ vars.GCP_PROJECT_ID }} \
+            -var region=us-central1
+
+      - name: Capture tf output (bucket name)
+        id: tfout
+        working-directory: terraform/gcp/state-bootstrap
+        run: |
+          set -euo pipefail
+          BUCKET="$(terraform output -raw name)"
+          echo "bucket=$BUCKET" >> "$GITHUB_OUTPUT"
+
+      - name: Migrate local state into GCS
+        working-directory: terraform/gcp/state-bootstrap
+        env:
+          TF_BUCKET: ${{ steps.tfout.outputs.bucket }}
+        run: |
+          set -euo pipefail
+          cat > backend.tf <<'EOF'
+          terraform {
+            backend "gcs" {}
+          }
+          EOF
+
+          terraform init \
+            -force-copy \
+            -migrate-state \
+            -backend-config="bucket=${TF_BUCKET}" \
+            -backend-config="prefix=bootstrap"

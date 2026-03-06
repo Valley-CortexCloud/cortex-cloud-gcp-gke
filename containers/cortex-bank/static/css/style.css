@@ -1,0 +1,378 @@
+/* Custom CSS for CortexBrokenBank */
+
+/* Colour Scheme from Localisation */
+:root {
+    --primary-color: #1e3a8a;
+    --secondary-color: #dc2626;
+    --accent-color: #059669;
+    --dark-color: #1f2937;
+    --light-color: #f8fafc;
+    --warning-color: #f59e0b;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+/* Navigation Enhancements */
+.navbar-brand {
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #fbbf24 !important;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--light-color) 0%, #e5e7eb 100%);
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+}
+
+.hero-content h1 {
+    color: var(--primary-color);
+}
+
+.security-dashboard {
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none !important;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Features Section */
+.features-section {
+    background-color: #f9fafb;
+}
+
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Lab Cards */
+.lab-card {
+    transition: transform 0.3s ease;
+}
+
+.lab-card:hover {
+    transform: translateY(-5px);
+}
+
+.lab-card .card {
+    border: 1px solid #e5e7eb;
+    transition: box-shadow 0.3s ease;
+}
+
+.lab-card:hover .card {
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.lab-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Vulnerability Indicators */
+.vulnerability-indicators .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Disclaimer Page Styles */
+.disclaimer-content {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Fix for disclaimer page text visibility */
+body.bg-dark .card-body {
+    background-color: #2d3748 !important;
+    color: #fff !important;
+}
+
+body.bg-dark .card-body ul li {
+    color: #fff !important;
+}
+
+body.bg-dark .list-unstyled li {
+    color: #fff !important;
+}
+
+body.bg-dark .list-group-item {
+    background-color: #2d3748 !important;
+    color: #fff !important;
+    border-color: #4a5568 !important;
+}
+
+body.bg-dark .accordion-body {
+    background-color: #2d3748 !important;
+    color: #fff !important;
+}
+
+body.bg-dark .accordion-button {
+    background-color: #374151 !important;
+    color: #fff !important;
+}
+
+body.bg-dark .accordion-button:not(.collapsed) {
+    background-color: #4b5563 !important;
+    color: #fff !important;
+}
+
+/* Specific targeting for disclaimer page lists */
+.bg-dark .card .list-unstyled li {
+    color: #ffffff !important;
+}
+
+.bg-dark .card-body {
+    color: #ffffff !important;
+}
+
+/* More specific selectors for disclaimer page */
+.card-body .list-unstyled li {
+    color: #ffffff !important;
+}
+
+.card .card-body {
+    background-color: #2d3748 !important;
+}
+
+.card .card-body ul li {
+    color: #ffffff !important;
+}
+
+/* Universal dark theme fix */
+body[class*="bg-dark"] .card-body,
+body[class*="bg-dark"] .card-body li,
+body[class*="bg-dark"] .list-unstyled li {
+    color: #ffffff !important;
+}
+
+/* Force white text on all card elements regardless of body class */
+.card-body .list-unstyled li,
+.card .list-unstyled li,
+.list-unstyled li {
+    color: #ffffff !important;
+}
+
+/* Disclaimer page specific dark theme */
+body.bg-dark {
+    background-color: #1a1a1a !important;
+}
+
+body.bg-dark .card {
+    background-color: #2d3748 !important;
+    border-color: #4a5568 !important;
+}
+
+body.bg-dark .card-body {
+    background-color: #2d3748 !important;
+    color: #ffffff !important;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Alert Enhancements */
+.alert {
+    border-radius: 10px;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border-color: #fecaca;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-color: #fde68a;
+}
+
+/* Card Enhancements */
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* Button Enhancements */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1e40af 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #1e40af 0%, var(--primary-color) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(30, 58, 138, 0.4);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #ef4444 100%);
+    border: none;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #ef4444 0%, var(--secondary-color) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+}
+
+/* Footer Styles */
+footer {
+    background: linear-gradient(135deg, var(--dark-color) 0%, #374151 100%);
+}
+
+/* Security Lab Specific Styles */
+.vulnerability-summary {
+    margin-top: 3rem;
+}
+
+.vulnerability-summary .accordion-item {
+    border-radius: 8px !important;
+    margin-bottom: 1rem;
+    border: 1px solid #e5e7eb;
+}
+
+.vulnerability-summary .accordion-button {
+    border-radius: 8px !important;
+    font-weight: 600;
+}
+
+.vulnerability-summary .accordion-button:not(.collapsed) {
+    background-color: #f9fafb;
+    box-shadow: none;
+}
+
+/* Code Blocks */
+code {
+    background-color: #f3f4f6;
+    color: #374151;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: auto;
+        padding: 2rem 0;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .security-dashboard {
+        margin-top: 2rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Utility Classes */
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.border-gradient {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, var(--primary-color), var(--accent-color)) 1;
+}
+
+/* Accessibility Improvements */
+.btn:focus,
+.card:focus,
+.nav-link:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    footer,
+    .btn,
+    .alert {
+        display: none !important;
+    }
+    
+    .hero-section {
+        background: white !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+}

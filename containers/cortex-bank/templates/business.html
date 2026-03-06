@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ locale.pages.business.title }} - {{ locale.landing_copy.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-4 fw-bold mb-3">
+                <i data-feather="briefcase" class="me-3 text-primary"></i>
+                {{ locale.pages.business.title }}
+            </h1>
+            <p class="lead text-muted">{{ locale.pages.business.subtitle }}</p>
+            <p class="text-muted">{{ locale.pages.business.description }}</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for card in locale.pages.business.cards %}
+        <div class="col-md-6 col-lg-6">
+            <div class="glass-card p-5 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <i data-feather="shield-off" class="text-warning me-3" style="width: 32px; height: 32px;"></i>
+                    <h4 class="mb-0 fw-bold">{{ card.title }}</h4>
+                </div>
+                <p class="text-muted mb-4">{{ card.description }}</p>
+                <button class="btn btn-primary btn-lg w-100">
+                    <i data-feather="arrow-right" class="me-2"></i>
+                    {{ locale.buttons[card.button_key] }}
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <div class="alert alert-warning glass-card" role="alert">
+                <i data-feather="alert-triangle" class="me-2"></i>
+                <strong>Compliance Notice:</strong> All offshore banking services operate in jurisdictions with minimal reporting requirements and maximum discretion.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

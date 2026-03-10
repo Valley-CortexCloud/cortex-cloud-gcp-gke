@@ -29,7 +29,11 @@ module "sa-instance" {
     "roles/iam.serviceAccountUser"
   ]
 }
-
+module "network_hub" {
+  source       = "./gcp/network-hub"
+  project_name = var.project_name
+  region       = var.region
+}
 module "sa-k8s" {
   source = "./gcp/service-account"
 

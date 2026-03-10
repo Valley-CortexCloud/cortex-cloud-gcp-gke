@@ -15,3 +15,8 @@ variable "labels" {
   type        = map(string)
   default     = { environment = "prod", project = "infrastructure", shared = true, terraform = true }
 }
+
+variable "project_name" {
+  description = "The base name for the project resources"
+  type        = string
+}

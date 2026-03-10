@@ -6,7 +6,7 @@ resource "google_compute_instance" "vmseries" {
 
   boot_disk {
     initialize_params {
-      image = "projects/paloaltonetworks-sg/global/images/vmseries-flex-byol-1112"
+      image = "projects/paloaltonetworksgcp-public/global/images/vmseries-flex-byol-1112"
     }
   }
 

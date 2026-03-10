@@ -115,13 +115,16 @@ module "gke" {
 }
 
 # -------------------------------------------------------------------------
-# UPDATED: VM Module Calls (Removed depends_on and updated networks)
+# UPDATED: VM Module Calls
 # -------------------------------------------------------------------------
 module "vm01" {
   source                = "./gcp/compute-instance"
   instance_name         = "${var.project_name}-protected"
-  network_name          = "projects/prod-wdfirpnd3bws/global/networks/jvalley-trust-vpc"
-  subnet_name           = google_compute_subnetwork.gke_subnet.name
+  
+  # Placed INSIDE the firewall (Trust)
+  network_name          = google_compute_network.trust_vpc.name
+  subnet_name           = google_compute_subnetwork.trust_subnet.name
+  
   service_account_email = module.sa-instance.service_account_email
   labels = {
     environment            = "prod"
@@ -133,8 +136,11 @@ module "vm01" {
 module "vm02" {
   source                = "./gcp/compute-instance"
   instance_name         = "${var.project_name}-unprotected"
-  network_name          = "projects/prod-wdfirpnd3bws/global/networks/jvalley-trust-vpc"
-  subnet_name           = google_compute_subnetwork.gke_subnet.name
+  
+  # Placed OUTSIDE the firewall (Untrust) - acts as internet/attacker box
+  network_name          = google_compute_network.untrust_vpc.name
+  subnet_name           = google_compute_subnetwork.untrust_subnet.name
+  
   service_account_email = module.sa-instance.service_account_email
   labels = {
     environment            = "prod"

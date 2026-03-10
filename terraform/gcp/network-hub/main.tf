@@ -58,9 +58,11 @@ resource "google_compute_route" "default_trust_route" {
   name             = "${var.project_name}-trust-to-fw"
   dest_range       = "0.0.0.0/0"
   network          = google_compute_network.trust_vpc.name
-  # This points to the firewall's Trust interface IP (we'll assign this to the FW)
-  next_hop_ip = "10.0.2.10" 
+  next_hop_ip      = "10.0.2.10" 
   priority         = 100
+
+  # NEW: Force Terraform to wait for the subnet to finish building first!
+  depends_on = [google_compute_subnetwork.trust_subnet]
 }
 
 # Allow external access to Mgmt and Untrust

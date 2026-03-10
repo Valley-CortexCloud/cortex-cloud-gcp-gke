@@ -1,37 +1,36 @@
 resource "google_compute_instance" "vmseries" {
-  name         = "${var.project_name}-fw-01"
-  machine_type = "e2-standard-4" # Palo Alto recommends at least 4 vCPUs for PAN-OS 11.x
-  zone         = var.zone
-  can_ip_forward = true # CRITICAL: Allows firewall to route traffic
+  name           = "${var.project_name}-fw-01"
+  machine_type   = "e2-standard-4" 
+  zone           = var.zone
+  can_ip_forward = true 
 
   boot_disk {
     initialize_params {
-      # Use a modern PAN-OS 11.1 Flex BYOL image
       image = "projects/paloaltonetworks-sg/global/images/vmseries-flex-byol-1112"
     }
   }
 
-  # Interface 0: Management (eth0)
+  # Interface 0: Management
   network_interface {
-    network    = google_compute_network.mgmt_vpc.id
-    subnetwork = google_compute_subnetwork.mgmt_subnet.id
+    network    = var.mgmt_vpc_id
+    subnetwork = var.mgmt_subnet_id
     network_ip = "10.0.0.10"
-    access_config {} # Gives Mgmt a Public IP so you can access the Web UI
+    access_config {} 
   }
 
-  # Interface 1: Untrust / Public (eth1)
+  # Interface 1: Untrust / Public
   network_interface {
-    network    = google_compute_network.untrust_vpc.id
-    subnetwork = google_compute_subnetwork.untrust_subnet.id
+    network    = var.untrust_vpc_id
+    subnetwork = var.untrust_subnet_id
     network_ip = "10.0.1.10"
-    access_config {} # Gives Untrust a Public IP for outbound internet
+    access_config {} 
   }
 
-  # Interface 2: Trust / Internal (eth2)
+  # Interface 2: Trust / Internal
   network_interface {
-    network    = google_compute_network.trust_vpc.id
-    subnetwork = google_compute_subnetwork.trust_subnet.id
-    network_ip = "10.0.2.10" # Matches the next_hop_address in our route!
+    network    = var.trust_vpc_id
+    subnetwork = var.trust_subnet_id
+    network_ip = "10.0.2.10" 
   }
 
   service_account {

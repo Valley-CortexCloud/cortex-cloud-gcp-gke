@@ -104,8 +104,8 @@ module "gke" {
   source = "./gcp/gke"
 
   cluster_name          = "${var.project_name}-gke-cluster"
-  network_name          = "projects/prod-wdfirpnd3bws/global/networks/jvalley-trust-vpc"
-  subnet_name           = google_compute_subnetwork.gke_subnet.name
+  network_name          = google_compute_network.trust_vpc.name
+  subnet_name           = google_compute_subnetwork.trust_subnet.name
   service_account_email = module.sa-k8s.service_account_email
   machine_type          = "e2-standard-2"
   labels = {

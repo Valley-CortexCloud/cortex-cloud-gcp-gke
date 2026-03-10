@@ -34,7 +34,7 @@ resource "google_compute_instance" "vmseries" {
   }
   # NEW: Inject your Cloud Shell SSH key on boot
   metadata = {
-    ssh-keys = "admin:${filepathexpand("~/.ssh/google_compute_engine.pub")}"
+    ssh-keys = "admin:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDa+mVMhPscDLVX0acO6xJjPdasozTI6zH55GoqPtYFlNk/Z7XJqKC9+0icBd/dYSAc9OZ/XXcjtZExs/NI9OwOa2jvVcR2B820BARcYD55Y5Q8DlXsiXdcbJ6F93amVqquCgFzTkcEQ7HruJ1Rs64b8GtmXDMljzuksQ7W/3KiiTgnbOQiI117parS+AmqA1fiysbdWSZi8K8qkszxxMrdKLL22wIiWs/ddAsw65lv28261Mlhqd+DozyiaaNz9+DsY5BuwwxRJoMWwpjT/iVcY+ksFkWVeLg3fGMAxqXdyZAskUfwWMgZ30rfrAZ+xV8gEAZUXr1v9GtMg+CGj3Oa2SSoDE/+v0hupFpMd/NLBpV5/JhfVmKoaYDMYCRkJMXaktMUh5jM4X/tb/0J+czzK7zhkWWhbOLs2Jrbnij5asbHt2vSHd2fPRpO+kB18+MGobXNfgmn8iynnGvkkeza1WRtsp0LZ509rEPVVH2qi+OClDCQTrJuVCD+kao9lyk= jvalley@cs-641103618805-default"
   }
 
   service_account {

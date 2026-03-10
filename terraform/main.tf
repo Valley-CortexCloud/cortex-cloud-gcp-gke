@@ -113,7 +113,26 @@ module "gke" {
     project     = var.project_name
   }
 }
+# -------------------------------------------------------------------------
+# NEW: VM-Series Firewall Module Call
+# -------------------------------------------------------------------------
+module "firewall" {
+  source = "./gcp/firewall"
 
+  project_name          = var.project_name
+  zone                  = var.zone
+  service_account_email = module.sa-instance.service_account_email
+
+  # Pass the network outputs from network.tf into the firewall module
+  mgmt_vpc_id       = google_compute_network.mgmt_vpc.id
+  mgmt_subnet_id    = google_compute_subnetwork.mgmt_subnet.id
+  
+  untrust_vpc_id    = google_compute_network.untrust_vpc.id
+  untrust_subnet_id = google_compute_subnetwork.untrust_subnet.id
+  
+  trust_vpc_id      = google_compute_network.trust_vpc.id
+  trust_subnet_id   = google_compute_subnetwork.trust_subnet.id
+}
 # -------------------------------------------------------------------------
 # UPDATED: VM Module Calls
 # -------------------------------------------------------------------------

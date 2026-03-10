@@ -68,5 +68,9 @@ resource "google_compute_firewall" "allow_mgmt" {
   name          = "${var.project_name}-allow-mgmt"
   network       = google_compute_network.mgmt_vpc.name
   source_ranges = ["0.0.0.0/0"]
-  allow { protocol = "tcp" ports = ["22", "443"] }
+  
+  allow {
+    protocol = "tcp"
+    ports    = ["22", "443"]
+  }
 }

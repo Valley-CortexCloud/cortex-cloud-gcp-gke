@@ -1,19 +1,11 @@
-output "vpc_network_name" {
-  value       = google_compute_network.vpc_network.name
-  description = "The name of the created VPC network."
-}
+output "mgmt_vpc_id" { value = google_compute_network.mgmt_vpc.id }
+output "mgmt_subnet_id" { value = google_compute_subnetwork.mgmt_subnet.id }
 
-output "public_subnet_name" {
-  value       = google_compute_subnetwork.public_subnet.name
-  description = "The name of the public subnet."
-}
+output "untrust_vpc_id" { value = google_compute_network.untrust_vpc.id }
+output "untrust_subnet_id" { value = google_compute_subnetwork.untrust_subnet.id }
 
-output "private_subnet_name" {
-  value       = google_compute_subnetwork.private_subnet.name
-  description = "The name of the private subnet."
-}
+output "trust_vpc_id" { value = google_compute_network.trust_vpc.id }
+output "trust_subnet_id" { value = google_compute_subnetwork.trust_subnet.id }
 
-output "nat_gateway_name" {
-  value       = google_compute_router_nat.nat_gateway.name
-  description = "The name of the NAT Gateway."
-}
+output "trust_vpc_name" { value = google_compute_network.trust_vpc.name }
+output "trust_subnet_name" { value = google_compute_subnetwork.trust_subnet.name }

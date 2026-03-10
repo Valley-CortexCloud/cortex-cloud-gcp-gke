@@ -32,6 +32,10 @@ resource "google_compute_instance" "vmseries" {
     subnetwork = var.trust_subnet_id
     network_ip = "10.0.2.10" 
   }
+  # NEW: Inject your Cloud Shell SSH key on boot
+  metadata = {
+    ssh-keys = "admin:${filepathexpand("~/.ssh/google_compute_engine.pub")}"
+  }
 
   service_account {
     email  = var.service_account_email

@@ -29,11 +29,7 @@ module "sa-instance" {
     "roles/iam.serviceAccountUser"
   ]
 }
-module "network_hub" {
-  source       = "./gcp/network-hub"
-  project_name = var.project_name
-  region       = var.region
-}
+
 module "sa-k8s" {
   source = "./gcp/service-account"
 
@@ -56,7 +52,6 @@ module "storage" {
     environment = "prod"
     project     = var.project_name
   }
-
 }
 
 resource "google_storage_bucket_object" "file1" {
@@ -80,25 +75,12 @@ module "container-repos" {
 }
 
 # -------------------------------------------------------------------------
-# NEW: Create a dedicated GKE Subnet inside the Torque Trust VPC
-# This solves the /28 IP exhaustion issue while keeping traffic routed to the FW
+# NEW: Network Hub Module Call (Builds Mgmt, Trust, and Untrust VPCs)
 # -------------------------------------------------------------------------
-resource "google_compute_subnetwork" "gke_subnet" {
-  name                     = "gke-trust-subnet"
-  ip_cidr_range            = "10.10.100.0/24"
-  region                   = var.region
-  network                  = "projects/prod-wdfirpnd3bws/global/networks/jvalley-trust-vpc"
-  private_ip_google_access = true
-
-  # GKE requires secondary IP ranges for Pods and Services
-  secondary_ip_range {
-    range_name    = "gke-pod-range"
-    ip_cidr_range = "10.11.0.0/20"
-  }
-  secondary_ip_range {
-    range_name    = "gke-service-range"
-    ip_cidr_range = "10.12.0.0/20"
-  }
+module "network_hub" {
+  source       = "./gcp/network-hub"
+  project_name = var.project_name
+  region       = var.region
 }
 
 # -------------------------------------------------------------------------
@@ -108,8 +90,11 @@ module "gke" {
   source = "./gcp/gke"
 
   cluster_name          = "${var.project_name}-gke-cluster"
-  network_name          = google_compute_network.trust_vpc.name
-  subnet_name           = google_compute_subnetwork.trust_subnet.name
+  
+  # References the outputs from the network_hub module
+  network_name          = module.network_hub.trust_vpc_name
+  subnet_name           = module.network_hub.trust_subnet_name
+  
   service_account_email = module.sa-k8s.service_account_email
   machine_type          = "e2-standard-2"
   labels = {
@@ -117,6 +102,7 @@ module "gke" {
     project     = var.project_name
   }
 }
+
 # -------------------------------------------------------------------------
 # NEW: VM-Series Firewall Module Call
 # -------------------------------------------------------------------------
@@ -127,16 +113,17 @@ module "firewall" {
   zone                  = var.zone
   service_account_email = module.sa-instance.service_account_email
 
-  # Pass the network outputs from network.tf into the firewall module
-  mgmt_vpc_id       = google_compute_network.mgmt_vpc.id
-  mgmt_subnet_id    = google_compute_subnetwork.mgmt_subnet.id
+  # References the outputs from the network_hub module
+  mgmt_vpc_id       = module.network_hub.mgmt_vpc_id
+  mgmt_subnet_id    = module.network_hub.mgmt_subnet_id
   
-  untrust_vpc_id    = google_compute_network.untrust_vpc.id
-  untrust_subnet_id = google_compute_subnetwork.untrust_subnet.id
+  untrust_vpc_id    = module.network_hub.untrust_vpc_id
+  untrust_subnet_id = module.network_hub.untrust_subnet_id
   
-  trust_vpc_id      = google_compute_network.trust_vpc.id
-  trust_subnet_id   = google_compute_subnetwork.trust_subnet.id
+  trust_vpc_id      = module.network_hub.trust_vpc_id
+  trust_subnet_id   = module.network_hub.trust_subnet_id
 }
+
 # -------------------------------------------------------------------------
 # UPDATED: VM Module Calls
 # -------------------------------------------------------------------------
@@ -145,8 +132,8 @@ module "vm01" {
   instance_name         = "${var.project_name}-protected"
   
   # Placed INSIDE the firewall (Trust)
-  network_name          = google_compute_network.trust_vpc.name
-  subnet_name           = google_compute_subnetwork.trust_subnet.name
+  network_name          = module.network_hub.trust_vpc_name
+  subnet_name           = module.network_hub.trust_subnet_name
   
   service_account_email = module.sa-instance.service_account_email
   labels = {
@@ -161,8 +148,8 @@ module "vm02" {
   instance_name         = "${var.project_name}-unprotected"
   
   # Placed OUTSIDE the firewall (Untrust) - acts as internet/attacker box
-  network_name          = google_compute_network.untrust_vpc.name
-  subnet_name           = google_compute_subnetwork.untrust_subnet.name
+  network_name          = module.network_hub.untrust_vpc_name
+  subnet_name           = module.network_hub.untrust_subnet_name
   
   service_account_email = module.sa-instance.service_account_email
   labels = {
